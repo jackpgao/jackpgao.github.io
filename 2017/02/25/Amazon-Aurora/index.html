@@ -133,7 +133,7 @@
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-14627021155167.png">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-14627021278883.png">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1461899169322.png">
-<meta property="og:updated_time" content="2017-02-25T14:50:19.000Z">
+<meta property="og:updated_time" content="2017-02-25T15:16:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Amazon Aurora介绍">
 <meta name="twitter:description" content="Amazon 发布了旗下的Aurora数据库，兼容MySQL，号称5倍性能于MySQL
@@ -685,6 +685,13 @@
 <li><p><a href="http://docs.aws.amazon.com/zh_cn/AmazonRDS/latest/UserGuide/CHAP_Aurora.html" target="_blank" rel="external">关于 Amazon RDS 的 Aurora</a></p>
 </li>
 </ul>
+<h2 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h2><ul>
+<li>如果用MySQL跑在Docker里，底层跑一个Ceph分布式存储，是不是跟上面的有点类似呢？<ul>
+<li>Docker用来做快速切换</li>
+<li>Ceph做底层的分布式存储，确保数据永远不丢，且方便做文件快照 </li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -734,6 +741,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/25/Markdown-everywhere/" rel="prev" title="Markdown Everywhere">
+                Markdown Everywhere <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -805,7 +816,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -814,7 +825,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -823,7 +834,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -869,7 +880,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#官方介绍"><span class="nav-number">2.</span> <span class="nav-text">官方介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宣传特点"><span class="nav-number">3.</span> <span class="nav-text">宣传特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概念与架构"><span class="nav-number">4.</span> <span class="nav-text">概念与架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#架构猜想"><span class="nav-number">4.1.</span> <span class="nav-text">架构猜想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#官方架构图"><span class="nav-number">4.2.</span> <span class="nav-text">官方架构图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能-amp-HA"><span class="nav-number">5.</span> <span class="nav-text">性能 & HA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#官方测试有争议"><span class="nav-number">5.1.</span> <span class="nav-text">官方测试有争议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能测试1（Percona）"><span class="nav-number">5.2.</span> <span class="nav-text">性能测试1（Percona）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能测试2"><span class="nav-number">5.3.</span> <span class="nav-text">性能测试2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HA测试"><span class="nav-number">5.4.</span> <span class="nav-text">HA测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#质疑-amp-亮点"><span class="nav-number">6.</span> <span class="nav-text">质疑 & 亮点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#质疑"><span class="nav-number">6.1.</span> <span class="nav-text">质疑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#亮点"><span class="nav-number">6.2.</span> <span class="nav-text">亮点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">7.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">8.</span> <span class="nav-text">参考文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重点推荐"><span class="nav-number">8.1.</span> <span class="nav-text">重点推荐</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#官方介绍"><span class="nav-number">2.</span> <span class="nav-text">官方介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宣传特点"><span class="nav-number">3.</span> <span class="nav-text">宣传特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概念与架构"><span class="nav-number">4.</span> <span class="nav-text">概念与架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#架构猜想"><span class="nav-number">4.1.</span> <span class="nav-text">架构猜想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#官方架构图"><span class="nav-number">4.2.</span> <span class="nav-text">官方架构图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能-amp-HA"><span class="nav-number">5.</span> <span class="nav-text">性能 & HA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#官方测试有争议"><span class="nav-number">5.1.</span> <span class="nav-text">官方测试有争议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能测试1（Percona）"><span class="nav-number">5.2.</span> <span class="nav-text">性能测试1（Percona）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能测试2"><span class="nav-number">5.3.</span> <span class="nav-text">性能测试2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HA测试"><span class="nav-number">5.4.</span> <span class="nav-text">HA测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#质疑-amp-亮点"><span class="nav-number">6.</span> <span class="nav-text">质疑 & 亮点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#质疑"><span class="nav-number">6.1.</span> <span class="nav-text">质疑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#亮点"><span class="nav-number">6.2.</span> <span class="nav-text">亮点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">7.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">8.</span> <span class="nav-text">参考文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重点推荐"><span class="nav-number">8.1.</span> <span class="nav-text">重点推荐</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Update"><span class="nav-number">9.</span> <span class="nav-text">Update</span></a></li></ol></div>
             
 
           </div>
