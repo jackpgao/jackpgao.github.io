@@ -1,0 +1,1048 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Amazon,Aurora,MySQL," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Amazon 发布了旗下的Aurora数据库，兼容MySQL，号称5倍性能于MySQL
+到底如何，来一探究竟
+
+目录
+官方介绍
+
+宣传特点
+
+概念与架构
+
+性能、HA探讨
+
+质疑、亮点
+
+结论
+
+参考文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon Aurora介绍">
+<meta property="og:url" content="http://jackpgao.github.io/2017/02/25/Amazon-Aurora/index.html">
+<meta property="og:site_name" content="Jack Gao's Blog">
+<meta property="og:description" content="Amazon 发布了旗下的Aurora数据库，兼容MySQL，号称5倍性能于MySQL
+到底如何，来一探究竟
+
+目录
+官方介绍
+
+宣传特点
+
+概念与架构
+
+性能、HA探讨
+
+质疑、亮点
+
+结论
+
+参考文档">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1462157204235.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1461844552426.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-吐槽.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-06-14624993330730.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1461835139969.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-14627021155167.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-14627021278883.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1461899169322.png">
+<meta property="og:updated_time" content="2017-02-25T14:50:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon Aurora介绍">
+<meta name="twitter:description" content="Amazon 发布了旗下的Aurora数据库，兼容MySQL，号称5倍性能于MySQL
+到底如何，来一探究竟
+
+目录
+官方介绍
+
+宣传特点
+
+概念与架构
+
+性能、HA探讨
+
+质疑、亮点
+
+结论
+
+参考文档">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1462157204235.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackpgao.github.io/2017/02/25/Amazon-Aurora/"/>
+
+
+
+
+
+  <title> Amazon Aurora介绍 | Jack Gao's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack Gao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">All great achievements require time.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/02/25/Amazon-Aurora/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Amazon Aurora介绍
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-25T22:15:41+08:00">
+                2017-02-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1462157204235.png" alt=""></p>
+<blockquote>
+<p>Amazon 发布了旗下的Aurora数据库，兼容MySQL，号称5倍性能于MySQL</p>
+<p>到底如何，来一探究竟</p>
+</blockquote>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><p>官方介绍</p>
+</li>
+<li><p>宣传特点</p>
+</li>
+<li><p>概念与架构</p>
+</li>
+<li><p>性能、HA探讨</p>
+</li>
+<li><p>质疑、亮点</p>
+</li>
+<li><p>结论</p>
+</li>
+<li><p>参考文档</p>
+</li>
+</ol>
+<a id="more"></a>
+<h2 id="官方介绍"><a href="#官方介绍" class="headerlink" title="官方介绍"></a>官方介绍</h2><ul>
+<li><p>Amazon Aurora 是一个关系型数据库引擎，结合了高端商用数据库的速度和可用性，同时还具有开源数据库的简单性和成本效益</p>
+</li>
+<li><p>它提供的吞吐量比同一硬件上运行的标准 MySQL 最多高出五倍。Amazon Aurora 的设计与 MySQL 5.6 兼容，因此现有 MySQL 应用程序和工具无需修改即可运行</p>
+</li>
+<li><p>Amazon Aurora 继 MySQL、Oracle、Microsoft SQL Server 和 PostgreSQL 之后，成为第五个可通过 Amazon RDS 提供给客户的数据库引擎</p>
+</li>
+<li><p>兼容 MySQL 的关系数据库，其性能高达 MySQL 的 5 倍。有商业数据库的安全性、可用性和可靠性，但成本只是商业数据库的 1/10</p>
+</li>
+<li><p>最高可以实现每秒 50 万次读取和 10 万次写入</p>
+</li>
+<li><p>最多15个副本 存储空间最小为 10GB，最大为 64TB</p>
+</li>
+<li><p>Amazon Aurora 的设计旨在提供高于 99.99% 的可用性。从物理存储故障恢复是一个透明过程，而实例故障转移也只需要不到 30 秒</p>
+</li>
+<li><p>Amazon Aurora 的存储具有容错和自我修复功能。您的数据有六个副本复制分布在三个可用区中，并且会持续备份到 Amazon S3</p>
+</li>
+</ul>
+<h2 id="宣传特点"><a href="#宣传特点" class="headerlink" title="宣传特点"></a>宣传特点</h2><ul>
+<li>读写分离</li>
+<li>快速Fail Over</li>
+<li>从库几乎0延迟</li>
+<li>5X 性能于MySQL</li>
+<li>易于扩展（读）</li>
+</ul>
+<h2 id="概念与架构"><a href="#概念与架构" class="headerlink" title="概念与架构"></a>概念与架构</h2><ul>
+<li>Aurora 并不开源</li>
+<li>Aurora 不是用于MySQL的插件式引擎（不是InnoDB或者TokuDB这样的引擎）</li>
+<li>Aurora 算是一个数据库软件（网上都称其为engine，个人觉得，Aurora 作为一个软件更合适）</li>
+<li>Aurora 是结合了Amazon 云生态系统里各种服务组件的、一个能够媲美商业数据库（官方宣传）的、兼容MySQL的数据库引擎</li>
+<li>Aurora 开源了也没用，因为它依赖的都是Amazon自己的基础服务（S3等）</li>
+</ul>
+<h3 id="架构猜想"><a href="#架构猜想" class="headerlink" title="架构猜想"></a>架构猜想</h3><p><img src="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1461844552426.png" alt="https://www.percona.com/blog/2015/11/16/amazon-aurora-looking-deeper/"></p>
+<ul>
+<li><p>上图是Percona Vadim Tkachenko 猜想Aurora 的架构图，基本的原理就是共享了一个高效的存储层，用这种方式来取代binlog的复制方式，所以才会提供很快的Fail Over特性、几乎为0的从库延迟。</p>
+</li>
+<li><p>这种架构，跟Oracle RAC 是不是很像？</p>
+</li>
+<li>PXC是不是也有些类似？Mariadb Galera</li>
+<li>share everything？</li>
+</ul>
+<blockquote>
+<p>ps：<br>Amazon 的工程师，在对外宣讲的一个点，就是针对现有数据库架构很多冗余部件的吐槽，这样对于数据的备份、成本、灵活性都很不方便。</p>
+</blockquote>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-吐槽.jpg" alt="吐槽"></p>
+<p>通过上述的这种架构，Aurora 可以：</p>
+<ul>
+<li>Avoid data writes to storage??</li>
+<li>Avoid binary logs</li>
+<li>Avoid InnoDB transactional logs??</li>
+<li>Disable doublewrites</li>
+<li>Disable InnoDB checksums</li>
+</ul>
+<p>理论上是有性能提升的。</p>
+<h3 id="官方架构图"><a href="#官方架构图" class="headerlink" title="官方架构图"></a>官方架构图</h3><p><img src="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-06-14624993330730.png" alt=""></p>
+<ul>
+<li>主实例<ul>
+<li>支持读写工作负载，并执行针对集群卷的<strong>所有数据修改</strong>。每个 Aurora 数据库集群均有一个主实例</li>
+</ul>
+</li>
+<li>Aurora副本<ul>
+<li>支持只读操作。每个数据库集群可拥有一个支持读写工作负载的主实例，以及最多 15 Aurora 个副本。多个 Aurora 副本将分配读取工作负载，您还可通过将 Aurora 副本置于单独的可用区中来提高数据库可用性</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>存储<ul>
+<li>SSD 单一虚拟卷</li>
+<li>一个区域中的多个可用区的数据副本组成</li>
+<li>64 TB</li>
+</ul>
+</li>
+<li>复制<ul>
+<li>可以使用 MySQL 二进制日志 (binlog) 复制在两个 Amazon Aurora 数据库集群之间设置复制</li>
+</ul>
+</li>
+<li>可靠性<ul>
+<li>增加副本</li>
+<li>副本在不同可用区（类似IDC）</li>
+<li>存储自动修复</li>
+<li>“自动恢复”缓存预热</li>
+<li>崩溃恢复<ul>
+<li>Aurora 设计为在发生崩溃时立即恢复并继续提供应用程序数据。Aurora 以异步方式对并行线程执行崩溃恢复，以便数据库在发生崩溃后打开并立即可用</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>性能增强<ul>
+<li>快速插入，特别适用于 LOAD DATA 和 INSERT INTO … SELECT … 语句</li>
+</ul>
+</li>
+<li>安全性</li>
+</ul>
+<h2 id="性能-amp-HA"><a href="#性能-amp-HA" class="headerlink" title="性能 &amp; HA"></a>性能 &amp; HA</h2><h3 id="官方测试有争议"><a href="#官方测试有争议" class="headerlink" title="官方测试有争议"></a><strong>官方测试有争议</strong></h3><ul>
+<li>官方宣称，写方面，3X 于MySQL，读方面，5X 于MySQL</li>
+<li>官方的测试环境 <ul>
+<li>250 tables, with 25000 rows each </li>
+<li>4.5GB</li>
+<li>Amazon used r3.8xlarge instances<ul>
+<li>32 virtual CPUs</li>
+<li>244GB of memory</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="性能测试1（Percona）"><a href="#性能测试1（Percona）" class="headerlink" title="性能测试1（Percona）"></a>性能测试1（Percona）</h3><p><img src="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1461835139969.png" alt=""></p>
+<ul>
+<li>结论<ul>
+<li>在高配（高IO）的EC2机器上，Percona Server性能依然高于或者持平 Aurora。</li>
+<li>但是在数据量比较大的情况下，Aurora 还是有一定优势的。</li>
+<li>数据量较少的情况下，Aurora 性能不及Percona。如果按照官方的对比，Percona Server 也要比MySQL 高出很多性能了。</li>
+<li>最高IO的EC2，价格也最贵，成本最大。</li>
+<li>从下面的表格来看，Aurora 还是有一定的优势的。</li>
+</ul>
+</li>
+</ul>
+<p>价格对比：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Item</th>
+<th style="text-align:center">Config</th>
+<th style="text-align:center">Price a Year($)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Aurora</td>
+<td style="text-align:center">4 virtual CPUS + 30GB memory + 400GB</td>
+<td style="text-align:center">311.40</td>
+</tr>
+<tr>
+<td style="text-align:center">ps</td>
+<td style="text-align:center">4 virtual CPUS + 30GB memory + 500GB + 1500/3000 ios</td>
+<td style="text-align:center">210.60</td>
+</tr>
+<tr>
+<td style="text-align:center">ps-io2000</td>
+<td style="text-align:center">4 virtual CPUS + 30GB memory + 500GB + 2000 ios</td>
+<td style="text-align:center">353.10</td>
+</tr>
+<tr>
+<td style="text-align:center">ps-io3000</td>
+<td style="text-align:center">4 virtual CPUS + 30GB memory + 500GB + 3000 ios</td>
+<td style="text-align:center">418.10 </td>
+</tr>
+</tbody>
+</table>
+<h3 id="性能测试2"><a href="#性能测试2" class="headerlink" title="性能测试2"></a>性能测试2</h3><p><img src="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-14627021155167.png" alt=""></p>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/2016-05-08-14627021278883.png" alt=""></p>
+<ul>
+<li>结论<ul>
+<li>5X 太夸张</li>
+<li>性能好于用户自己在EC2上搭建的MySQL（跟percona的测试有冲突）</li>
+<li>跟自家的5.6 RDS比，没有太大优势</li>
+<li>但是Aurora 在响应时间上，有一定优势</li>
+</ul>
+</li>
+</ul>
+<h3 id="HA测试"><a href="#HA测试" class="headerlink" title="HA测试"></a>HA测试</h3><p><img src="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1461899169322.png" alt=""></p>
+<ul>
+<li>上图来自Percona 工程师 Yves Trudeau</li>
+<li>图中显示，Aurora 的Fail Over速度明显好于MHA，但是跟Galera 还有差距</li>
+<li>该blog 从HA、性能等方面，大量对比了Galera 和Aurora，对于Aurora这种架构，只跟MySQL 单机去比，可能不太合适，和Galera 去对比，算是恰如其分的。</li>
+</ul>
+<h2 id="质疑-amp-亮点"><a href="#质疑-amp-亮点" class="headerlink" title="质疑 &amp; 亮点"></a>质疑 &amp; 亮点</h2><h3 id="质疑"><a href="#质疑" class="headerlink" title="质疑"></a>质疑</h3><ul>
+<li><p>5X 的性能，见上文。</p>
+</li>
+<li><p>与官方MySQL比：</p>
+<ul>
+<li><p>大量细节（版本号标定、Bug List）显示，Aurora 跟MySQL 5.6 有很多渊源，并且，从Bug List 来看，Aurora 明显跟不上MySQL 官方的脚步，：</p>
+<blockquote>
+<p>My question here, does Amazon have the ability to keep up with MySQL bug fixes and regularly update their software? So far it does not seem so.</p>
+</blockquote>
+</li>
+<li><p><a href="https://www.percona.com/blog/2015/11/16/amazon-aurora-looking-deeper/" target="_blank" rel="external">Amazon Aurora – Looking Deeper</a></p>
+</li>
+</ul>
+</li>
+<li><p>unusual behaviour</p>
+<ul>
+<li><p>怪异的隔离级别</p>
+<ul>
+<li>默认只支持RR，修改其他不生效，但是不报错</li>
+</ul>
+</li>
+<li><p>被杀掉的从库查询: </p>
+<blockquote>
+<p>Scenario:<br>READER:<br>execute long SELECT col1 FROM tab1<br>WRITER:<br>while SELECT running, execute ALTER TABLE tab1 ADD COLUMN col2 ;<br>Effect: SELECT on READER fails immediately with an error: “ERROR 1866 (HY000): Query execution was interrupted on a read-only database because of a metadata change on the master”</p>
+<p>So there again I think Aurora does its best given architectural limitations and one-directional communication: it just chooses to kill read statements on Readers.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="亮点"><a href="#亮点" class="headerlink" title="亮点"></a>亮点</h3><ul>
+<li>修复了Query cache 对写造成的影响。</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ul>
+<li>大神 DimitriK 表示一脸不屑，5.7早就可以达到100w QPS，单纯从性能来讲，Aurora 没有太大优势（官方宣称是50w Select QPS）。<br>注释：Dim的测试全都是内存测试，他的原则就是这种最为简单的测试，最能体现引擎内部的性能极限。<br><a href="http://dimitrik.free.fr/blog/archives/2014/11/mysql-performance-57-and-rds-aurora-so-what.html" target="_blank" rel="external">MySQL Performance: 5.7 and RDS Aurora, so what?.. ;-)</a></li>
+</ul>
+<ul>
+<li>个人认为，单纯讨论性能没有太大意义，要从RDS服务本身去谈。如备份、高可用。</li>
+<li>Aurora 的设计利用了Amazon 本身的诸多系统，从设计本身就可以做到高速Fail Over，另外，其备份也要比传统的MySQL实例备份来的方便。</li>
+<li>从Amazon 方面考虑，开发Aurora 这种东西，利用了自家的很多技术，这对云服务的成本来讲也是很大一笔节约。</li>
+<li>对用户来讲，购买EC2 主机来搭建MySQL也许不是一个明智的选择，如果Amazon 能提供更好、更廉价的RDS服务，何乐而不为？</li>
+<li>Amazon 的野心，在于构建一个能够媲美商业数据库的数据库，但是这个数据库并不是一个用来卖的软件（像Oracle那样），他的目的在于打造一个基于云的商业数据库服务，及Amazon RDS。</li>
+</ul>
+<ul>
+<li>套用Percona Vadim Tkachenko 的一句话：</li>
+</ul>
+<blockquote>
+<p>In general I think Amazon Aurora is a quite advanced proprietary version of MySQL. It is not revolutionary, however, and indeed not “reimagined relational databases” as Amazon presents it. This technology does not address a problem with scaling writes, sharding and does not handle cross-nodes transactions.</p>
+<p>“这不是一个革命性的产品，它没能解决写扩展的问题，也没有解决sharding、以及多节点事物的问题，但是这给关系型数据库未来的发展，提供了一些想象，是一个很好的MySQL衍生品。”</p>
+</blockquote>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li><p><a href="https://aws.amazon.com/cn/rds/aurora/details/" target="_blank" rel="external">Amazon Aurora 产品详细信息</a></p>
+</li>
+<li><p><a href="http://blog.takipi.com/benchmarking-aurora-vs-mysql-is-amazons-new-db-really-5x-faster/" target="_blank" rel="external">Benchmarking Aurora vs MySQL: Is Amazon’s New DB Really 5x Faster?</a></p>
+</li>
+<li><p><a href="http://dimitrik.free.fr/blog/archives/2014/11/mysql-performance-57-and-rds-aurora-so-what.html" target="_blank" rel="external">MySQL Performance: 5.7 and RDS Aurora, so what?.. ;-)</a></p>
+</li>
+</ul>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=_oWa4fWAqTY" target="_blank" rel="external">Introduction to Amazon RDS for Aurora</a></li>
+</ul>
+<h3 id="重点推荐"><a href="#重点推荐" class="headerlink" title="重点推荐"></a>重点推荐</h3><ul>
+<li><p><a href="http://www.theregister.co.uk/2014/11/26/inside_aurora_how_disruptive_is_amazons_mysql_clone/" target="_blank" rel="external">Inside Aurora: how disruptive is Amazon’s MySQL clone?</a></p>
+</li>
+<li><p><a href="https://www.percona.com/blog/2015/11/16/amazon-aurora-looking-deeper/" target="_blank" rel="external">Amazon Aurora – Looking Deeper</a></p>
+</li>
+</ul>
+<ul>
+<li><p><a href="https://www.percona.com/blog/2015/12/03/amazon-aurora-sysbench-bencmarks/" target="_blank" rel="external">Amazon Aurora in sysbench benchmarks</a></p>
+</li>
+<li><p><a href="https://aws.amazon.com/cn/rds/aurora/" target="_blank" rel="external">Amazon Aurora</a></p>
+</li>
+<li><p><a href="http://www.tusacentral.net/joomla/index.php/mysql-blogs/175-aws-aurora-benchmarking-blast-or-splash.html" target="_blank" rel="external">AWS Aurora Benchmarking - Blast or Splash?</a></p>
+</li>
+<li><p><a href="http://docs.aws.amazon.com/zh_cn/AmazonRDS/latest/UserGuide/CHAP_Aurora.html" target="_blank" rel="external">关于 Amazon RDS 的 Aurora</a></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Amazon/" rel="tag"># Amazon</a>
+          
+            <a href="/tags/Aurora/" rel="tag"># Aurora</a>
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/25/Facebook-memcached-middle-mcrouter/" rel="next" title="Facebook强大的Memcached中间件：mcrouter介绍">
+                <i class="fa fa-chevron-left"></i> Facebook强大的Memcached中间件：mcrouter介绍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Jack Gao" />
+          <p class="site-author-name" itemprop="name">Jack Gao</p>
+           
+              <p class="site-description motion-element" itemprop="description">Done is better than perfect!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/jackpgao/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#官方介绍"><span class="nav-number">2.</span> <span class="nav-text">官方介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宣传特点"><span class="nav-number">3.</span> <span class="nav-text">宣传特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概念与架构"><span class="nav-number">4.</span> <span class="nav-text">概念与架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#架构猜想"><span class="nav-number">4.1.</span> <span class="nav-text">架构猜想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#官方架构图"><span class="nav-number">4.2.</span> <span class="nav-text">官方架构图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能-amp-HA"><span class="nav-number">5.</span> <span class="nav-text">性能 & HA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#官方测试有争议"><span class="nav-number">5.1.</span> <span class="nav-text">官方测试有争议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能测试1（Percona）"><span class="nav-number">5.2.</span> <span class="nav-text">性能测试1（Percona）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能测试2"><span class="nav-number">5.3.</span> <span class="nav-text">性能测试2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HA测试"><span class="nav-number">5.4.</span> <span class="nav-text">HA测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#质疑-amp-亮点"><span class="nav-number">6.</span> <span class="nav-text">质疑 & 亮点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#质疑"><span class="nav-number">6.1.</span> <span class="nav-text">质疑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#亮点"><span class="nav-number">6.2.</span> <span class="nav-text">亮点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">7.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">8.</span> <span class="nav-text">参考文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重点推荐"><span class="nav-number">8.1.</span> <span class="nav-text">重点推荐</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Gao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
