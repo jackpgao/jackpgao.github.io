@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="About," />
+  <meta name="keywords" content="memcached,Facebook,mcrouter," />
 
 
 
@@ -87,31 +87,33 @@
 
 
 
-<meta name="description" content="关于我
-90后，MySQL DBA，从事互联网行业，关注数据相关的基础建设和架构设计
-
-喜欢结合硬件、业务特点进行架构调整和优化
-
-这个博客采用HEXO搭建，使用的是NEXT主题">
+<meta name="description" content="这里记录一些调研了解情况
+FB在缓存方面的使用有一个很牛X的地方，就是用MC扛起一起缓存，像流行的Redis数据库，从来不用
+强大的业务压力背后，是强大的MC中间件，叫mcrouter">
 <meta property="og:type" content="article">
-<meta property="og:title" content="About Me">
-<meta property="og:url" content="http://jackpgao.github.io/2017/02/25/About/index.html">
+<meta property="og:title" content="Facebook强大的Memcached中间件：mcrouter介绍">
+<meta property="og:url" content="http://jackpgao.github.io/2017/02/25/Facebook-memcached-middle-mcrouter/index.html">
 <meta property="og:site_name" content="Jack Gao's Blog">
-<meta property="og:description" content="关于我
-90后，MySQL DBA，从事互联网行业，关注数据相关的基础建设和架构设计
-
-喜欢结合硬件、业务特点进行架构调整和优化
-
-这个博客采用HEXO搭建，使用的是NEXT主题">
-<meta property="og:updated_time" content="2017-02-25T06:27:01.000Z">
+<meta property="og:description" content="这里记录一些调研了解情况
+FB在缓存方面的使用有一个很牛X的地方，就是用MC扛起一起缓存，像流行的Redis数据库，从来不用
+强大的业务压力背后，是强大的MC中间件，叫mcrouter">
+<meta property="og:image" content="https://bigdatalondon.files.wordpress.com/2015/05/middleware-magic.gif">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/34568231.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/11470274.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/47772263.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/51020514.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/1909823.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/31407915.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/38935641.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/84486521.jpg">
+<meta property="og:image" content="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/42561589.jpg">
+<meta property="og:updated_time" content="2017-02-25T10:20:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="About Me">
-<meta name="twitter:description" content="关于我
-90后，MySQL DBA，从事互联网行业，关注数据相关的基础建设和架构设计
-
-喜欢结合硬件、业务特点进行架构调整和优化
-
-这个博客采用HEXO搭建，使用的是NEXT主题">
+<meta name="twitter:title" content="Facebook强大的Memcached中间件：mcrouter介绍">
+<meta name="twitter:description" content="这里记录一些调研了解情况
+FB在缓存方面的使用有一个很牛X的地方，就是用MC扛起一起缓存，像流行的Redis数据库，从来不用
+强大的业务压力背后，是强大的MC中间件，叫mcrouter">
+<meta name="twitter:image" content="https://bigdatalondon.files.wordpress.com/2015/05/middleware-magic.gif">
 
 
 
@@ -124,7 +126,7 @@
     fancybox: true,
     motion: true,
     duoshuo: {
-      userId: '0',
+      userId: 'undefined',
       author: '博主'
     },
     algolia: {
@@ -139,13 +141,13 @@
 
 
 
-  <link rel="canonical" href="http://jackpgao.github.io/2017/02/25/About/"/>
+  <link rel="canonical" href="http://jackpgao.github.io/2017/02/25/Facebook-memcached-middle-mcrouter/"/>
 
 
 
 
 
-  <title> About Me | Jack Gao's Blog </title>
+  <title> Facebook强大的Memcached中间件：mcrouter介绍 | Jack Gao's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -284,7 +286,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/02/25/About/">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/02/25/Facebook-memcached-middle-mcrouter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jack Gao">
@@ -305,7 +307,7 @@
             
             
               
-                About Me
+                Facebook强大的Memcached中间件：mcrouter介绍
               
             
           </h1>
@@ -320,7 +322,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-25T09:51:57+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-25T18:11:36+08:00">
                 2017-02-25
               </time>
             
@@ -343,8 +345,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/About/" itemprop="url" rel="index">
-                    <span itemprop="name">About</span>
+                  <a href="/categories/cache/" itemprop="url" rel="index">
+                    <span itemprop="name">cache</span>
                   </a>
                 </span>
 
@@ -355,16 +357,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/02/25/About/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/25/About/" itemprop="commentCount"></span>
-                </a>
-              </span>
             
           
 
@@ -388,13 +380,111 @@
       
 
       
-        <h2 id="关于我"><a href="#关于我" class="headerlink" title="关于我"></a>关于我</h2><ul>
-<li><p>90后，MySQL DBA，从事互联网行业，关注数据相关的基础建设和架构设计</p>
+        <blockquote>
+<p>这里记录一些调研了解情况</p>
+<p>FB在缓存方面的使用有一个很牛X的地方，就是用MC扛起一起缓存，像流行的Redis数据库，从来不用</p>
+<p>强大的业务压力背后，是强大的MC中间件，叫mcrouter</p>
+</blockquote>
+<p><img src="https://bigdatalondon.files.wordpress.com/2015/05/middleware-magic.gif" alt=""></p>
+<a id="more"></a>
+<h2 id="DBA迫切需要的功能"><a href="#DBA迫切需要的功能" class="headerlink" title="DBA迫切需要的功能"></a>DBA迫切需要的功能</h2><blockquote>
+<p><code>front-ends</code>数量（连接数问题）<br>扩容<br>缩容<br>HA<br>系统状态</p>
+</blockquote>
+<h2 id="开发迫切需要的功能"><a href="#开发迫切需要的功能" class="headerlink" title="开发迫切需要的功能"></a>开发迫切需要的功能</h2><blockquote>
+<p>多机房同步写<br>多级cache，热key自动分离<br><a href="http://www.cnblogs.com/zhengyun_ustc/p/multigethole.html" target="_blank" rel="external">再说memcache的multiget hole（无底洞）</a></p>
+</blockquote>
+<h2 id="About-mcrouter"><a href="#About-mcrouter" class="headerlink" title="About mcrouter"></a>About mcrouter</h2><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><ul>
+<li>Facebook</li>
+<li>pronounced “mick-router”</li>
+<li>5 billion requests per second</li>
+<li>Instagram</li>
+<li>BSD license</li>
+<li>easy-to-understand and easy-to-deploy</li>
+<li><code>C++ 11</code> <code>C</code> <code>Ragel</code> <code>Folly</code> <code>fbthrift</code></li>
+<li>multiple independent threads</li>
+<li>configuration in JSON format</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/34568231.jpg" alt=""></p>
+<h3 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h3><ul>
+<li><strong>Standard open source memcached ASCII protocol support</strong><br>支持标准的 <code>ASCII</code> 协议</li>
+</ul>
+<ul>
+<li><strong>Connection poolin</strong><br>采用连接池，减少对 <code>memcached</code> 的连接</li>
+</ul>
+<ul>
+<li><strong>Multiple hashing schemes</strong><br>采用一致性哈希<br>支持其他专用哈希算法</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/11470274.jpg" alt=""></p>
+<ul>
+<li><strong>Prefix routing</strong><br>前缀路由，可把某些 <code>key</code> 单独放在一个实例上，分离压力</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/47772263.jpg" alt=""></p>
+<ul>
+<li><strong>Replicated pools</strong><br><code>pool</code> 之间可做 <code>复制</code> ，读写分离，只读某个 <code>pool</code> ，写全部的 <code>pool</code> 。</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/51020514.jpg" alt=""></p>
+<ul>
+<li><p><strong>Production traffic shadowing</strong><br>生产环境引流测试，可灵活设定引流方式</p>
 </li>
-<li><p>喜欢结合硬件、业务特点进行架构调整和优化</p>
+<li><p><strong>Online reconfiguration</strong><br>配置文件热更新，自动加载，无延迟</p>
 </li>
-<li><p>这个博客采用HEXO搭建，使用的是NEXT主题</p>
+<li><p><strong>Flexible routing</strong><br>没看懂。</p>
 </li>
+<li><p><strong>Destination health monitoring and automatic failover</strong><br>自带健康检查，如果出现问题，会自动切换到其他 <code>destination</code> ，期间会不断检查坏掉的节点，如果恢复，会切回来。</p>
+</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/1909823.jpg" alt=""></p>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/31407915.jpg" alt=""></p>
+<ul>
+<li><strong>Cold cache warm up</strong><br>增加节点不会以冷的 <code>cache</code> 响应客户端，会按照下面的逻辑进行 <code>warmup</code> 。</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/38935641.jpg" alt=""></p>
+<ul>
+<li><strong>Broadcast operations</strong><br>指定关键字，可进行广播操作，如达到多写（有问题）、多删除的目的。</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/84486521.jpg" alt=""></p>
+<ul>
+<li><strong>Reliable delete stream</strong><br>通过文件落地，达到可靠性删除。</li>
+</ul>
+<p><img src="http://7xs4nb.com1.z0.glb.clouddn.com/16-3-22/42561589.jpg" alt=""></p>
+<ul>
+<li><strong>Multi-cluster support</strong><br>多个 <code>cluster</code> 配置简单。</li>
+</ul>
+<ul>
+<li><p><strong>Rich stats and debug commands</strong><br>丰富的系统状态，JSON。<br>“Which host would a particular request go to?”</p>
+</li>
+<li><p><strong>Quality of service</strong><br>可以进行限流。</p>
+</li>
+<li><p><strong>Large values</strong><br>大的 <code>item</code> 进行拆分，重组。</p>
+</li>
+<li><p><strong>Multi-level caches</strong><br>优先查找 <code>local cache</code> ，如果没有，会查询 <code>remote cache</code> 并把结果写到 <code>local cache</code> 。</p>
+</li>
+<li><p><strong>IPv6 support</strong>  </p>
+</li>
+</ul>
+<ul>
+<li><p><strong>SSL support</strong>  </p>
+</li>
+<li><p><strong>Multi-threaded architecture</strong>  </p>
+</li>
+</ul>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p><a href="https://code.facebook.com/posts/296442737213493/introducing-mcrouter-a-memcached-protocol-router-for-scaling-memcached-deployments/" target="_blank" rel="external">Introducing mcrouter: A memcached protocol router for scaling memcached deployments</a></p>
+<p><a href="https://github.com/facebook/mcrouter/wiki" target="_blank" rel="external">mcrouter-wiki</a></p>
+<p><a href="https://github.com/facebook/mcrouter" target="_blank" rel="external">mcrouter@github</a></p>
+<p><a href="https://www.facebook.com/groups/mcrouter/" target="_blank" rel="external">mcrouter-group@facebook</a></p>
+<p><a href="https://www.google.co.jp/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;uact=8&amp;ved=0ahUKEwiQw6T6ndHLAhWjJaYKHY9cBPIQFggjMAE&amp;url=http%3A%2F%2Fwww.cs.utah.edu%2F~stutsman%2Fcs6963%2Fpublic%2Fpapers%2Fmemcached.pdf&amp;usg=AFQjCNFtLPOeOZgQYsEY7J-r7ZRpG2aV_Q&amp;sig2=Wv21Z0MgLUfQvPBfMw1teQ" target="_blank" rel="external">[PDF]Scaling Memcache at Facebook
+</a></p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>安装</li>
+<li>配置</li>
+<li>测试</li>
+</ul>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>如何监控 <code>mcrouter</code> </li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>是否满足平台对于mc的需求</li>
+<li>对比 <code>Twemproxy</code></li>
 </ul>
 
       
@@ -419,7 +509,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/About/" rel="tag"># About</a>
+            <a href="/tags/memcached/" rel="tag"># memcached</a>
+          
+            <a href="/tags/Facebook/" rel="tag"># Facebook</a>
+          
+            <a href="/tags/mcrouter/" rel="tag"># mcrouter</a>
           
         </div>
       
@@ -432,15 +526,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2017/02/25/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/02/25/hello-world/" rel="prev" title="Hello World">
-                Hello World <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -455,25 +549,6 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2017/02/25/About/"
-     data-title="About Me"
-     data-content=""
-     data-url="http://jackpgao.github.io/2017/02/25/About/">
-  <div class="ds-share-inline">
-    <ul  class="ds-share-icons-16">
-
-      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
-      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
-      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
-      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
-      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
-
-    </ul>
-    <div class="ds-share-icons-more">
-    </div>
-  </div>
-</div>
-      
     </div>
   </div>
 
@@ -484,10 +559,6 @@
 
           
   <div class="comments" id="comments">
-    
-      <div class="ds-thread" data-thread-key="2017/02/25/About/"
-           data-title="About Me" data-url="http://jackpgao.github.io/2017/02/25/About/">
-      </div>
     
   </div>
 
@@ -553,7 +624,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -599,7 +670,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于我"><span class="nav-number">1.</span> <span class="nav-text">关于我</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#DBA迫切需要的功能"><span class="nav-number">1.</span> <span class="nav-text">DBA迫切需要的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发迫切需要的功能"><span class="nav-number">2.</span> <span class="nav-text">开发迫切需要的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#About-mcrouter"><span class="nav-number">3.</span> <span class="nav-text">About mcrouter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">3.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Features"><span class="nav-number">3.2.</span> <span class="nav-text">Features</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">3.3.</span> <span class="nav-text">Reference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">3.4.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">3.5.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.6.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -731,39 +802,32 @@
 
   
 
-  
-    
-  
 
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"JackpGao"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
 
   
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
+
+
+
+
+	
+
+
+
+
+
   
 
 
 
 
 
+  
 
 
 
 
 
+  
 
 
 
