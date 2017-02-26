@@ -111,8 +111,7 @@ where 条件语句里，字段属性和赋给的条件，当数据类型不一�
 如果字段是字符，条件是整型，那么会把表中字段全都转换为整型（也就是上面图中">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/14880366201409.png">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1727239-3754e2a9738ff813.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1727239-357c1044982a0af2.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-25T15:31:16.000Z">
+<meta property="og:updated_time" content="2017-02-26T02:38:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL之隐式转换(Inexplicit Conversion)">
 <meta name="twitter:description" content="之前也总给业务优化SQL，隐式转换也非常常见，但是下面这个图，一下子还真解释不清楚。
@@ -369,6 +368,16 @@ where 条件语句里，字段属性和赋给的条件，当数据类型不一�
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/25/mysql-inexplicit-conversion/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/25/mysql-inexplicit-conversion/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -461,7 +470,6 @@ where 条件语句里，字段属性和赋给的条件，当数据类型不一�
 <li>上图的例子，是不是可以用来绕过身份验证？</li>
 </ul>
 <h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">-- 上面遗留的问题，跟系统时间并没有关系。怀疑虽然指定的是datetime，但是内部还是按照timestamp去做的。</div><div class="line">mysql&gt; select now();</div><div class="line">+---------------------+</div><div class="line">| now()               |</div><div class="line">+---------------------+</div><div class="line">| 1999-08-03 14:16:50 |</div><div class="line">+---------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select cast('23:12:13' as datetime) as test ;</div><div class="line">+---------------------+</div><div class="line">| test                |</div><div class="line">+---------------------+</div><div class="line">| 2023-12-13 00:00:00 |</div><div class="line">+---------------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure>
-<p><img src="http://upload-images.jianshu.io/upload_images/1727239-357c1044982a0af2.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> <a href="http://weibo.com/jackpgao/profile?rightmod=1&amp;wvr=6&amp;mod=personinfo" target="_blank" rel="external">JackpGao</a></p>
 
       
     </div>
@@ -537,6 +545,10 @@ where 条件语句里，字段属性和赋给的条件，当数据类型不一�
 
           
   <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/25/mysql-inexplicit-conversion/"
+           data-title="MySQL之隐式转换(Inexplicit Conversion)" data-url="http://jackpgao.github.io/2017/02/25/mysql-inexplicit-conversion/">
+      </div>
     
   </div>
 
@@ -780,32 +792,34 @@ where 条件语句里，字段属性和赋给的条件，当数据类型不一�
 
   
 
+  
+    
+  
 
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"JackpGao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
 
   
 
 
 
 
-	
 
 
 
 
 
-  
 
-
-
-
-
-  
-
-
-
-
-
-  
 
 
 
