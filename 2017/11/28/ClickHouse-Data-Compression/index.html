@@ -100,7 +100,7 @@ It might not be obvio">
 综述
 It might not be obvio">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15118448659901.jpg">
-<meta property="og:updated_time" content="2017-11-28T05:16:52.000Z">
+<meta property="og:updated_time" content="2017-11-28T05:21:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ClickHouse数据压缩[译文]">
 <meta name="twitter:description" content="原文：https://www.altinity.com/blog/2017/11/21/compression-in-clickhouseAltinity是国外一家从事ClickHouse咨询、服务的公司，该公司高管由ClickHouse开发者，以及来自Percona的专家组成。目前Altinity的ClickHouse云服务测试版已经上线。
@@ -434,6 +434,7 @@ It might not be obvio">
 <li>其实，从一开始ClickHouse就支持多种方式的数据压缩：LZ4和ZSTD。</li>
 <li>关于压缩算法的测试，见<a href="https://www.percona.com/blog/2016/04/13/evaluating-database-compression-methods-update/" target="_blank" rel="external">这篇文章</a>。简而言之，LZ4在速度上会更快，但是压缩率较低，ZSTD正好相反。尽管ZSTD比LZ4慢，但是相比传统的压缩方式Zlib，无论是在压缩效率还是速度上，都可以作为Zlib的替代品。</li>
 </ul>
+<a id="more"></a>
 <h2 id="实际压测"><a href="#实际压测" class="headerlink" title="实际压测"></a>实际压测</h2><blockquote>
 <p>To get some real numbers using ClickHouse, let’s review a table compressed with both methods.<br>For this, we will take the table lineorder, from the benchmark described in <a href="https://www.altinity.com/blog/2017/6/16/clickhouse-in-a-general-analytical-workload-based-on-star-schema-benchmark" target="_blank" rel="external">https://www.altinity.com/blog/2017/6/16/clickhouse-in-a-general-analytical-workload-based-on-star-schema-benchmark</a><br>The uncompressed datasize for lineorder table with 1000 scale is 680G.</p>
 </blockquote>
