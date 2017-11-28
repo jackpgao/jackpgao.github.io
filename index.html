@@ -308,6 +308,247 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/11/28/ClickHouse-Data-Compression/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/11/28/ClickHouse-Data-Compression/" itemprop="url">
+                  ClickHouse数据压缩[译文]
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-28T13:14:17+08:00">
+                2017-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClickHouse/" itemprop="url" rel="index">
+                    <span itemprop="name">ClickHouse</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/28/ClickHouse-Data-Compression/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/28/ClickHouse-Data-Compression/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>原文：<a href="https://www.altinity.com/blog/2017/11/21/compression-in-clickhouse" target="_blank" rel="external">https://www.altinity.com/blog/2017/11/21/compression-in-clickhouse</a><br>Altinity是国外一家从事ClickHouse咨询、服务的公司，该公司高管由ClickHouse开发者，以及来自Percona的专家组成。目前Altinity的ClickHouse云服务测试版已经上线。</p>
+</blockquote>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15118448659901.jpg" alt=""></p>
+<h2 id="综述"><a href="#综述" class="headerlink" title="综述"></a>综述</h2><blockquote>
+<p>It might not be obvious from the start, but ClickHouse supports different kinds of compressions, namely two LZ4 and ZSTD.</p>
+<p>There are evaluations for both of these methods: <a href="https://www.percona.com/blog/2016/04/13/evaluating-database-compression-methods-update/" target="_blank" rel="external">https://www.percona.com/blog/2016/04/13/evaluating-database-compression-methods-update/</a><br>But in short, LZ4 is fast but provides smaller compression ratio comparing to ZSTD. While ZSTD is slower than LZ4, it is often faster and compresses better than a traditional Zlib, so it might be considered as a replacement for Zlib compression.</p>
+</blockquote>
+<ul>
+<li>其实，从一开始ClickHouse就支持多种方式的数据压缩：LZ4和ZSTD。</li>
+<li>关于压缩算法的测试，见<a href="https://www.percona.com/blog/2016/04/13/evaluating-database-compression-methods-update/" target="_blank" rel="external">这篇文章</a>。简而言之，LZ4在速度上会更快，但是压缩率较低，ZSTD正好相反。尽管ZSTD比LZ4慢，但是相比传统的压缩方式Zlib，无论是在压缩效率还是速度上，都可以作为Zlib的替代品。</li>
+</ul>
+<h2 id="实际压测"><a href="#实际压测" class="headerlink" title="实际压测"></a>实际压测</h2><blockquote>
+<p>To get some real numbers using ClickHouse, let’s review a table compressed with both methods.<br>For this, we will take the table lineorder, from the benchmark described in <a href="https://www.altinity.com/blog/2017/6/16/clickhouse-in-a-general-analytical-workload-based-on-star-schema-benchmark" target="_blank" rel="external">https://www.altinity.com/blog/2017/6/16/clickhouse-in-a-general-analytical-workload-based-on-star-schema-benchmark</a><br>The uncompressed datasize for lineorder table with 1000 scale is 680G.</p>
+</blockquote>
+<ul>
+<li>为了用事实说话，我们一起对比一下这两种压缩方式。</li>
+<li>压测所用的表（lineorder）结构和数据来着<a href="https://www.altinity.com/blog/2017/6/16/clickhouse-in-a-general-analytical-workload-based-on-star-schema-benchmark" target="_blank" rel="external">这里</a>。</li>
+<li>未压缩的数据集是680GB。</li>
+</ul>
+<h2 id="数据对比"><a href="#数据对比" class="headerlink" title="数据对比"></a>数据对比</h2><blockquote>
+<p>And now let’s load this table into ClickHouse. With the default compression (LZ4), we have184G lineorderlz4<br>And with ZSTD135G lineorderzstd<br>There we need to mention how to make ClickHouse using ZSTD. For this, we add the following lines into config:</p>
+</blockquote>
+<ul>
+<li>把上述数据加载到ClickHouse后，默认的LZ4压缩算法下，数据容量是184G（压缩到27%），而ZSTD达到了135GB（压缩到20%）。</li>
+<li>关于如何使用ZSTD，需要简单的提一下，使用如下配置即可：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;compression incl=&quot;clickhouse_compression&quot;&gt;</div><div class="line">        &lt;case&gt;</div><div class="line">                &lt;method&gt;zstd&lt;/method&gt;  </div><div class="line">        &lt;/case&gt;</div><div class="line">&lt;/compression&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>So the compression ratio for this table</p>
+</blockquote>
+<h3 id="压缩比率对比"><a href="#压缩比率对比" class="headerlink" title="压缩比率对比"></a>压缩比率对比</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">Compression</th>
+<th style="text-align:center">Ratio </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">LZ4</td>
+<td style="text-align:center">3.7</td>
+</tr>
+<tr>
+<td style="text-align:center">ZSTD</td>
+<td style="text-align:center">5.0</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>What about performance? For this let’s run the following query</p>
+</blockquote>
+<ul>
+<li>压缩后的性能如何，我们来跑如下查询看看。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> toYear(LO_ORDERDATE) <span class="keyword">AS</span> yod, <span class="keyword">sum</span>(LO_REVENUE) <span class="keyword">FROM</span> lineorder </div><div class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> yod;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>And we will execute this query in “cold” run (no data is cached), and following “hot” run when some data is already cached in OS memory after the first run.</p>
+</blockquote>
+<ul>
+<li>为了保持客观，我们会跑两次，第一次是冷数据请求，这次的数据没有被操作系统缓存，第二次跑一次热数据情求，这次的数据已经被操作系统的内存给缓存住了。</li>
+</ul>
+<blockquote>
+<p>So query results, for LZ4 compression:</p>
+</blockquote>
+<h3 id="LZ4的性能如下："><a href="#LZ4的性能如下：" class="headerlink" title="LZ4的性能如下："></a>LZ4的性能如下：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># Cold run:</div><div class="line">7 rows in set. Elapsed: 19.131 sec. Processed 6.00 billion rows, </div><div class="line">36.00 GB (313.63 million rows/s., 1.88 GB/s.)</div><div class="line"></div><div class="line">Hot run:</div><div class="line">7 rows in set. Elapsed: 4.531 sec. Processed 6.00 billion rows, </div><div class="line">36.00 GB (1.32 billion rows/s., 7.95 GB/s.)</div></pre></td></tr></table></figure>
+<blockquote>
+<p>For ZSTD compression:</p>
+</blockquote>
+<h3 id="ZSTD性能如下："><a href="#ZSTD性能如下：" class="headerlink" title="ZSTD性能如下："></a>ZSTD性能如下：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Cold run:</div><div class="line">7 rows in set. Elapsed: 20.990 sec. Processed 6.00 billion rows, </div><div class="line">36.00 GB (285.85 million rows/s., 1.72 GB/s.)</div><div class="line"></div><div class="line">Hot run:</div><div class="line">7 rows in set. Elapsed: 7.965 sec. Processed 6.00 billion rows, </div><div class="line">36.00 GB (753.26 million rows/s., 4.52 GB/s.)</div></pre></td></tr></table></figure>
+<blockquote>
+<p>While there is practically no difference in cold run times (as the IO time prevail decompression time), in hot runs LZ4 is much faster (as there is much less IO operations, and performance of decompression becomes a major factor).</p>
+</blockquote>
+<ul>
+<li>冷数据查询情况下，两者区别不大，原因在于消耗在IO方面的时间，远大于消耗在解压缩上面的时间。</li>
+<li>热数据请求下，LZ4会更快，此时IO代价小，数据解压缩成为性能瓶颈。</li>
+</ul>
+<blockquote>
+<p>Conclusion:</p>
+</blockquote>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><blockquote>
+<p>ClickHouse proposes two methods of compression: LZ4 and ZSTD, so you can choose what is suitable for your case.<br>With LZ4 you may get a better execution time with the cost of the worse compression and data taking more space on the storage.</p>
+</blockquote>
+<ul>
+<li>ClickHouse提供了两种数据压缩方式供我们选择：LZ4和ZSTD。</li>
+<li>默认的LZ4压缩方式，会给我们提供更快的执行效率，但是同时，我们要付出较多的磁盘容量占用的代价了。</li>
+</ul>
+<h2 id="译者注"><a href="#译者注" class="headerlink" title="译者注"></a>译者注</h2><ul>
+<li>ClickHouse在我们公司（Sina）内部已经有一段时间的使用了，抛开高效的SQL执行，数据容量也是一个非常喜人的地方</li>
+<li>我们使用的是大容量的服务（没错，就是Hadoop node节点的低配机器），单机容量轻松几十T，再加上ClickHouse优秀的压缩方式，日志数据存1-2年，都没有一点问题</li>
+<li>我们没修改过压缩算法，就用的默认的LZ4</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/11/20/ClickHouse-User-Password/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1785,180 +2026,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/02/25/Amazon-Aurora/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jack Gao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Jack Gao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/02/25/Amazon-Aurora/" itemprop="url">
-                  Amazon Aurora介绍
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-25T22:15:41+08:00">
-                2017-02-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MySQL/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/02/25/Amazon-Aurora/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/25/Amazon-Aurora/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/jk-markdown/1462157204235.png" alt=""></p>
-<blockquote>
-<p>Amazon 发布了旗下的Aurora数据库，兼容MySQL，号称5倍性能于MySQL</p>
-<p>到底如何，来一探究竟</p>
-</blockquote>
-<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
-<li><p>官方介绍</p>
-</li>
-<li><p>宣传特点</p>
-</li>
-<li><p>概念与架构</p>
-</li>
-<li><p>性能、HA探讨</p>
-</li>
-<li><p>质疑、亮点</p>
-</li>
-<li><p>结论</p>
-</li>
-<li><p>参考文档</p>
-</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/02/25/Amazon-Aurora/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2008,7 +2075,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2026,7 +2093,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-count">25</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
