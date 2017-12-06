@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="主键,ClickHouse," />
+  <meta name="keywords" content="ClickHouse,主键," />
 
 
 
@@ -104,9 +104,9 @@ Altinity是国外一家从事ClickHouse咨询、服务的公司，该公司高�
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15119326039423.jpg">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15119327276629.jpg">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/文件结构.png">
-<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/存储结构.png">
-<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/索引使用2.png">
-<meta property="og:updated_time" content="2017-12-06T07:24:12.000Z">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/存储结构-new.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/索引使用分析-new.png">
+<meta property="og:updated_time" content="2017-12-06T08:36:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ClickHouse主键探讨[译文+补充]">
 <meta name="twitter:description" content="原文：点这里
@@ -450,7 +450,6 @@ Altinity是国外一家从事ClickHouse咨询、服务的公司，该公司高�
 <li>这篇文章是从这里转载过来的： <a href="https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324" target="_blank" rel="external">https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324</a></li>
 <li>特别感谢ClickHouse的开发者Alexey Milovidov为本文提供的原始素材。</li>
 </ul>
-<a id="more"></a>
 <hr>
 <h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><ul>
 <li>Recently I dived deep into ClickHouse . ClickHouse is column-store database by Yandex with great performance for analytical queries. For example check <a href="https://clickhouse.yandex/benchmark.html" target="_blank" rel="external">benchmark</a> and post of <a href="http://tech.marksblogg.com/billion-nyc-taxi-clickhouse.html" target="_blank" rel="external">Mark Litwintschik</a>.</li>
@@ -632,17 +631,17 @@ Altinity是国外一家从事ClickHouse咨询、服务的公司，该公司高�
 <li>主键会每隔8192，取一行主键列的数据，同时记录这是第几个block</li>
 <li>查询的时候，如果有索引，就通过索引定位到是哪个block，然后找到这个block对应的mrk文件</li>
 <li>mrk文件里记录的是某个block的数据集，在整列bin文件的哪个物理偏移位置</li>
-<li>加载数据到内存，之后并行化过滤<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/存储结构.png" alt="存储结构"></li>
+<li>加载数据到内存，之后并行化过滤<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/存储结构-new.png" alt="存储结构-ne"></li>
 </ul>
 </li>
-<li><p>这里分别举例看看是否依赖最左原则：<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/索引使用2.png" alt="索引使用2"></p>
-<ul>
-<li>在使用半主键的时候，如果出现了索引跳跃，即直接用了y字段，跳过x，实际上也是可以有一些数据过滤的，但是效果并不是很好</li>
-<li>所以你说这是最左原则还是不是呢？</li>
 </ul>
-</li>
-<li><p>索引使用建议</p>
 <ul>
+<li>这里分别举例看看是否依赖最左原则：<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/索引使用分析-new.png" alt="索引使用分析-ne"></li>
+</ul>
+<pre><code>- 在使用半主键的时候，如果出现了索引跳跃，即直接用了y字段，跳过x，实际上也是可以有一些数据过滤的，但是效果并不是很好
+- 所以你说这是最左原则还是不是呢？
+</code></pre><ul>
+<li>索引使用建议<ul>
 <li>线上使用务必指定date字段，限制过滤的数据行</li>
 <li>并不是所有的字段都要加入到主键中</li>
 <li>(date, hour, min, ts)大多数情况下会是比较好的选择，但是请在SQL里用上这几个条件</li>
@@ -688,9 +687,9 @@ Altinity是国外一家从事ClickHouse咨询、服务的公司，该公司高�
       
         <div class="post-tags">
           
-            <a href="/tags/主键/" rel="tag"># 主键</a>
-          
             <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
+          
+            <a href="/tags/主键/" rel="tag"># 主键</a>
           
         </div>
       
