@@ -1,0 +1,1035 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ClickHouse,集群搭建," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="阅读此文，你将得到什么：
+
+ClickHouse安装的2种方法，以及背后的坑
+
+一步步帮你实现ClickHouse从单机到集群化，以及集群化的原理、配置文件等
+
+集群化的2种方案，孰优孰劣
+
+
+如有疑问，请留言或者联系我
+
+组件介绍
+ClickHouse安装完后，会有几个重要命令：
+clickhouse-server ClickHouse的Server端，也就是CK数据库的核心程序，相当于my">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ClickHouse集群搭建从0到1">
+<meta property="og:url" content="http://jackpgao.github.io/2017/12/13/ClickHouse-Cluster-Beginning-to-End/index.html">
+<meta property="og:site_name" content="Jack Gao's Blog">
+<meta property="og:description" content="阅读此文，你将得到什么：
+
+ClickHouse安装的2种方法，以及背后的坑
+
+一步步帮你实现ClickHouse从单机到集群化，以及集群化的原理、配置文件等
+
+集群化的2种方案，孰优孰劣
+
+
+如有疑问，请留言或者联系我
+
+组件介绍
+ClickHouse安装完后，会有几个重要命令：
+clickhouse-server ClickHouse的Server端，也就是CK数据库的核心程序，相当于my">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/giphy.gif">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15130898329890.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/Snip20170901_27.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15130927193425.jpg">
+<meta property="og:updated_time" content="2017-12-12T16:04:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ClickHouse集群搭建从0到1">
+<meta name="twitter:description" content="阅读此文，你将得到什么：
+
+ClickHouse安装的2种方法，以及背后的坑
+
+一步步帮你实现ClickHouse从单机到集群化，以及集群化的原理、配置文件等
+
+集群化的2种方案，孰优孰劣
+
+
+如有疑问，请留言或者联系我
+
+组件介绍
+ClickHouse安装完后，会有几个重要命令：
+clickhouse-server ClickHouse的Server端，也就是CK数据库的核心程序，相当于my">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/giphy.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'YZ27AIO4SX',
+      apiKey: '9b9cf00eff4aac0ae53f6891931c3b5a',
+      indexName: 'jackpgao.github.io',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackpgao.github.io/2017/12/13/ClickHouse-Cluster-Beginning-to-End/"/>
+
+
+
+
+
+  <title> ClickHouse集群搭建从0到1 | Jack Gao's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack Gao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">All great achievements require time.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/12/13/ClickHouse-Cluster-Beginning-to-End/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ClickHouse集群搭建从0到1
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-13T00:02:48+08:00">
+                2017-12-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClickHouse/" itemprop="url" rel="index">
+                    <span itemprop="name">ClickHouse</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/13/ClickHouse-Cluster-Beginning-to-End/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/13/ClickHouse-Cluster-Beginning-to-End/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/giphy.gif" alt="giphy"></p>
+<blockquote>
+<p>阅读此文，你将得到什么：</p>
+<ol>
+<li><p>ClickHouse安装的2种方法，以及背后的坑</p>
+</li>
+<li><p>一步步帮你实现ClickHouse从单机到集群化，以及集群化的原理、配置文件等</p>
+</li>
+<li><p>集群化的2种方案，孰优孰劣</p>
+</li>
+</ol>
+<p>如有疑问，请留言或者联系我</p>
+</blockquote>
+<h2 id="组件介绍"><a href="#组件介绍" class="headerlink" title="组件介绍"></a>组件介绍</h2><ul>
+<li>ClickHouse安装完后，会有几个重要命令：<ol>
+<li>clickhouse-server ClickHouse的Server端，也就是CK数据库的核心程序，相当于mysqld命令，提供数据库服务端</li>
+<li>clickhouse-client ClickHouse自带的client端，提供命令行的交互操作方式，来连接服务端，相当于mysql命令</li>
+</ol>
+</li>
+</ul>
+<a id="more"></a>
+<h2 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h2><ul>
+<li>官方默认只支持Ubuntu，并且提供了Docker镜像：<ul>
+<li><a href="https://hub.docker.com/r/yandex/clickhouse-server/" target="_blank" rel="external">ClickHouse Server</a>  </li>
+<li><a href="https://hub.docker.com/r/yandex/clickhouse-client/" target="_blank" rel="external">ClickHouse Client</a></li>
+</ul>
+</li>
+<li><p>Docker安装很方便，但是有几个问题：</p>
+<ul>
+<li>默认监听了IPv6，如果你的服务器恰好没有开启V6，会导致Docker启动失败的<ul>
+<li>解决方案：使用Docker命令，cp出默认的配置文件，修改network监听后，拷回Docker，重新启动即可</li>
+</ul>
+</li>
+<li>默认时区问题并不是东八区，如果没有修改，一些时间函数会差8个小时</li>
+<li>clickhouse-client在Docker下，无法正常输入中文（调了LANG，无效，如果搞定记得告诉我）</li>
+<li>数据目录如果有要求，额外在Docker启动的时候，挂载一下</li>
+<li>配置文件不方便修改</li>
+</ul>
+</li>
+<li><p>建议调整：</p>
+<ul>
+<li>挂载本地服务器时区，或者直接修改Docker里的时区文件</li>
+<li>拷贝所有配置文件到服务器目录，启动时做映射，方便修改</li>
+<li>映射一个专用的数据目录</li>
+</ul>
+</li>
+<li>由于Docker方式我并不在线上采用，这里不再举例。建议仅仅作为笔记本上测试、了解用（不过前期，没有找到rpm包，Docker的确帮了我们很大的忙）。</li>
+</ul>
+<h2 id="RPM包安装"><a href="#RPM包安装" class="headerlink" title="RPM包安装"></a>RPM包安装</h2><ul>
+<li>不出意外的话，99%的服务器都是CentOS系列</li>
+<li><p>官方没有提供rpm包，但是<a href="https://packagecloud.io/app/altinity/clickhouse/search?q=&amp;filter=all&amp;filter=all&amp;dist=" target="_blank" rel="external">Altinity公司提供了</a>，关于这个公司的介绍，可以参照我其他文章</p>
+</li>
+<li><p>如果下载不了，看我的<a href="https://pan.baidu.com/s/1kVQRRQf" target="_blank" rel="external">百度网盘</a>，密码yv72（我这里好久没更新了，请注意看版本）</p>
+</li>
+<li>CentOS推荐7.3以上，基本没有依赖包的问题</li>
+<li>rpm -ivh * 即可安装完成</li>
+</ul>
+<h2 id="配置文件解析"><a href="#配置文件解析" class="headerlink" title="配置文件解析"></a>配置文件解析</h2><ul>
+<li><p>ClickHouse有几核心的配置文件：</p>
+<ol>
+<li>config.xml 端口配置、本地机器名配置、内存设置等</li>
+<li>metrika.xml 集群配置、ZK配置、分片配置等</li>
+<li>users.xml 权限、配额设置</li>
+</ol>
+</li>
+<li><p>以上文件都可以在官方git下载到</p>
+</li>
+</ul>
+<h2 id="rpm启动方式"><a href="#rpm启动方式" class="headerlink" title="rpm启动方式"></a>rpm启动方式</h2><ul>
+<li>rpm安装后，会在服务器上生成如下几个文件：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"># 默认配置文件位置</div><div class="line">root@localhost.localdomain:/  # ls /etc/clickhouse-server</div><div class="line">config.xml  users.xml</div><div class="line"></div><div class="line"># 上述文件定义了默认数据目录，临时目录位置，日志目录</div><div class="line">/var/lib/clickhouse</div><div class="line">/var/lib/clickhouse/tmp/</div><div class="line">/var/log/clickhouse-server</div><div class="line"></div><div class="line"># 默认启动脚本，注意，这个名字虽然叫server，其实是个shell脚本</div><div class="line">/etc/rc.d/init.d/clickhouse-server</div><div class="line">root@localhost.localdomain:/  # file /etc/rc.d/init.d/clickhouse-server </div><div class="line">/etc/rc.d/init.d/clickhouse-server: POSIX shell script, ASCII text executable, with very long lines</div><div class="line"></div><div class="line"></div><div class="line"># 最大文件打开数</div><div class="line">root@localhost.localdomain:/  # cat /etc/security/limits.d/clickhouse.conf </div><div class="line">clickhouse      soft    nofile  262144</div><div class="line">clickhouse      hard    nofile  262144</div><div class="line"></div><div class="line"># 默认crontab目录（没啥用）</div><div class="line">/etc/cron.d/clickhouse-server</div><div class="line"></div><div class="line"></div><div class="line"># 剩下就是/usr/bin下的二进制文件，但其实都是软链接到了clickhouse这个二进制文件</div><div class="line">root@localhost.localdomain:/usr/bin  # ll | grep click -i</div><div class="line">-rwxr-xr-x    1 root root      63M Sep 20 16:58 clickhouse</div><div class="line">lrwxrwxrwx    1 root root       10 Dec 11 17:14 clickhouse-client -&gt; clickhouse</div><div class="line">-rwxr-xr-x    1 root root     3.3M Sep 20 16:58 clickhouse-compressor</div><div class="line">lrwxrwxrwx    1 root root       10 Dec 11 17:14 clickhouse-server -&gt; clickhouse</div></pre></td></tr></table></figure>
+<ul>
+<li><p>知道上述几个文件的作用后，我们就知道该怎么做了</p>
+<ul>
+<li><p>默认的数据目录明显不合理，特别是对于部分机器，系统盘和数据盘是不同的配置，需要单独挂载，以我们为例，我们统一使用/data1来放数据，数据目录以clickhouse命名，考虑到不用单机多实例，不以clickhouse${port}来命名</p>
+</li>
+<li><p>默认的配置文件，对我们的管理也是个隐患，建议把配置文件、数据目录、临时目录、日志文件，统一放到/data1/clickhouse里，即：</p>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">root@localhost.localdomain:/data1/clickhouse  # tree . -L 1</div><div class="line">.</div><div class="line">├── config-preprocessed.xml</div><div class="line">├── config.xml</div><div class="line">├── cores</div><div class="line">├── data</div><div class="line">├── flags</div><div class="line">├── log</div><div class="line">├── metadata</div><div class="line">├── metrika.xml</div><div class="line">├── start_ck.sh</div><div class="line">├── status</div><div class="line">├── tmp</div><div class="line">├── users-preprocessed.xml</div><div class="line">└── users.xml</div></pre></td></tr></table></figure>
+<ul>
+<li><p>关于如何启动，我们的做法是：</p>
+<ul>
+<li><p>修改默认的shell脚本，修改默认配置文件的位置，即上面的start_ck.sh</p>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15130898329890.jpg" alt=""></p>
+</li>
+<li><p>这里其实是可以直接使用clickhouse-server（二进制那个），并采用-d参数启动的，但是实际过程，遇到了很多意外的情况，比如-d后，并不会以daemon方式启动，后来就不考虑直接命令行方式了</p>
+</li>
+<li><p>修改config.xml里对数据目录的定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</div><div class="line">&lt;yandex&gt;</div><div class="line">    &lt;!-- 日志 --&gt;</div><div class="line">    &lt;logger&gt;</div><div class="line">        &lt;level&gt;trace&lt;/level&gt;</div><div class="line">        &lt;log&gt;/data1/clickhouse/log/server.log&lt;/log&gt;</div><div class="line">        &lt;errorlog&gt;/data1/clickhouse/log/error.log&lt;/errorlog&gt;</div><div class="line">        &lt;size&gt;1000M&lt;/size&gt;</div><div class="line">        &lt;count&gt;10&lt;/count&gt;</div><div class="line">    &lt;/logger&gt;</div><div class="line"></div><div class="line">    &lt;!-- 端口 --&gt;</div><div class="line">    &lt;http_port&gt;8123&lt;/http_port&gt;</div><div class="line">    &lt;tcp_port&gt;9000&lt;/tcp_port&gt;</div><div class="line">    &lt;interserver_http_port&gt;9009&lt;/interserver_http_port&gt;</div><div class="line"></div><div class="line">    &lt;!-- 本机域名 --&gt;</div><div class="line">    &lt;interserver_http_host&gt;这里需要用域名，如果后续用到复制的话&lt;/interserver_http_host&gt;</div><div class="line"></div><div class="line">    &lt;!-- 监听IP --&gt;</div><div class="line">    &lt;listen_host&gt;0.0.0.0&lt;/listen_host&gt;</div><div class="line">    &lt;!-- 最大连接数 --&gt;</div><div class="line">    &lt;max_connections&gt;64&lt;/max_connections&gt;</div><div class="line"></div><div class="line">    &lt;!-- 没搞懂的参数 --&gt;</div><div class="line">    &lt;keep_alive_timeout&gt;3&lt;/keep_alive_timeout&gt;</div><div class="line"></div><div class="line">    &lt;!-- 最大并发查询数 --&gt;</div><div class="line">    &lt;max_concurrent_queries&gt;16&lt;/max_concurrent_queries&gt;</div><div class="line"></div><div class="line">    &lt;!-- 单位是B --&gt;</div><div class="line">    &lt;uncompressed_cache_size&gt;8589934592&lt;/uncompressed_cache_size&gt;</div><div class="line">    &lt;mark_cache_size&gt;10737418240&lt;/mark_cache_size&gt;</div><div class="line"></div><div class="line">    &lt;!-- 存储路径 --&gt;</div><div class="line">    &lt;path&gt;/data1/clickhouse/&lt;/path&gt;</div><div class="line">    &lt;tmp_path&gt;/data1/clickhouse/tmp/&lt;/tmp_path&gt;</div><div class="line"></div><div class="line">    &lt;!-- user配置 --&gt;</div><div class="line">    &lt;users_config&gt;users.xml&lt;/users_config&gt;</div><div class="line">    &lt;default_profile&gt;default&lt;/default_profile&gt;</div><div class="line"></div><div class="line">    &lt;log_queries&gt;1&lt;/log_queries&gt;</div><div class="line"></div><div class="line">    &lt;default_database&gt;default&lt;/default_database&gt;</div><div class="line"></div><div class="line">    &lt;remote_servers incl=&quot;clickhouse_remote_servers&quot; /&gt;</div><div class="line">    &lt;zookeeper incl=&quot;zookeeper-servers&quot; optional=&quot;true&quot; /&gt;</div><div class="line">    &lt;macros incl=&quot;macros&quot; optional=&quot;true&quot; /&gt;</div><div class="line"></div><div class="line">    &lt;!-- 没搞懂的参数 --&gt;</div><div class="line">    &lt;builtin_dictionaries_reload_interval&gt;3600&lt;/builtin_dictionaries_reload_interval&gt;</div><div class="line"></div><div class="line">    &lt;!-- 控制大表的删除 --&gt;</div><div class="line">    &lt;max_table_size_to_drop&gt;0&lt;/max_table_size_to_drop&gt;</div><div class="line"></div><div class="line">    &lt;include_from&gt;/data1/clickhouse/metrika.xml&lt;/include_from&gt;</div><div class="line">&lt;/yandex&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="单机"><a href="#单机" class="headerlink" title="单机"></a>单机</h2><ul>
+<li><p>无需多解释，就是单机部署</p>
+</li>
+<li><p>按照上述方式安装rpm包，修改默认的config文件和启停控制脚本，启动即可</p>
+</li>
+<li><p>我上面的配置文件里，直接包含了集群的配置文件，如果只用了上述文件，是无法正常启动的</p>
+</li>
+<li><p>看这个文章的，应该都是冲着后面的集群搭建来的吧，所以，忽略这一个吧</p>
+</li>
+</ul>
+<h2 id="分布式集群"><a href="#分布式集群" class="headerlink" title="分布式集群"></a>分布式集群</h2><h3 id="CK是如何实现分布式的"><a href="#CK是如何实现分布式的" class="headerlink" title="CK是如何实现分布式的"></a>CK是如何实现分布式的</h3><ul>
+<li>CK的分布式，完全依赖配置文件，即每个节点，都共享同样的配置文件，这个配置文件里，写了我跟谁是一个cluster的，我自己的名字是啥</li>
+<li><p>如下面的配置文件里，有3个分片，各自用域名来标记，如果需要密码的话，集群也要写上明文密码和用户名</p>
+</li>
+<li><p>这样，就行程了ClickHouse的集群</p>
+</li>
+<li>集群怎么用?<ul>
+<li>答案是指定引擎</li>
+<li>CK里的引擎有十几个，这里只推荐3个：<ol>
+<li>MergeTree，是CK里最Advanced的引擎，性能超高，单机写入可以达到50w峰值，查询性能非常快，有兴趣看我其他文章</li>
+<li>ReplicatedMergeTree，基于MergeTree，同时引入ZK，做了复制，下文会说</li>
+<li>Distributed，分布式引擎，本身不存储数据，可认为就是一张View，如果写入，会把请求丢到集群里的节点（有算法控制），如果查询，会帮你做查询转发再聚合返回</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>metrika.xml</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line">&lt;yandex&gt;</div><div class="line"></div><div class="line">&lt;!-- 集群配置 --&gt;</div><div class="line">&lt;clickhouse_remote_servers&gt;</div><div class="line">    &lt;bip_ck_cluster&gt;</div><div class="line"></div><div class="line">        &lt;!-- 数据分片1  --&gt;</div><div class="line">        &lt;shard&gt;</div><div class="line">            &lt;internal_replication&gt;false&lt;/internal_replication&gt;</div><div class="line">            &lt;replica&gt;</div><div class="line">                &lt;host&gt;ck31.xxxx.com.cn&lt;/host&gt;</div><div class="line">                &lt;port&gt;9000&lt;/port&gt;</div><div class="line">                &lt;user&gt;default&lt;/user&gt;</div><div class="line">                &lt;password&gt;6lYaUiFi&lt;/password&gt;</div><div class="line">            &lt;/replica&gt;</div><div class="line">        &lt;/shard&gt;</div><div class="line"></div><div class="line">        &lt;!-- 数据分片2  --&gt;</div><div class="line">        &lt;shard&gt;</div><div class="line">            &lt;internal_replication&gt;false&lt;/internal_replication&gt;</div><div class="line">            &lt;replica&gt;</div><div class="line">                &lt;host&gt;ck32.xxxx.sina.com.cn&lt;/host&gt;</div><div class="line">                &lt;port&gt;9000&lt;/port&gt;</div><div class="line">                &lt;user&gt;default&lt;/user&gt;</div><div class="line">                &lt;password&gt;6lYaUiFi&lt;/password&gt;</div><div class="line">            &lt;/replica&gt;</div><div class="line">        &lt;/shard&gt;</div><div class="line"></div><div class="line">        &lt;!-- 数据分片3  --&gt;</div><div class="line">        &lt;shard&gt;</div><div class="line">            &lt;internal_replication&gt;false&lt;/internal_replication&gt;</div><div class="line">            &lt;replica&gt;</div><div class="line">                &lt;host&gt;ck33.xxxxa.com.cn&lt;/host&gt;</div><div class="line">                &lt;port&gt;9000&lt;/port&gt;</div><div class="line">                &lt;user&gt;default&lt;/user&gt;</div><div class="line">                &lt;password&gt;6lYaUiFi&lt;/password&gt;</div><div class="line">            &lt;/replica&gt;</div><div class="line">        &lt;/shard&gt;</div><div class="line"></div><div class="line">    &lt;/bip_ck_cluster&gt;</div><div class="line">&lt;/clickhouse_remote_servers&gt;</div><div class="line"></div><div class="line">&lt;!-- 本节点副本名称（这里无用） --&gt;</div><div class="line">&lt;macros&gt;</div><div class="line">    &lt;replica&gt;ck1&lt;/replica&gt;</div><div class="line">&lt;/macros&gt;</div><div class="line"></div><div class="line">&lt;!-- 监听网络（貌似重复） --&gt;</div><div class="line">&lt;networks&gt;</div><div class="line">   &lt;ip&gt;::/0&lt;/ip&gt;</div><div class="line">&lt;/networks&gt;</div><div class="line"></div><div class="line">&lt;!-- ZK  --&gt;</div><div class="line">&lt;zookeeper-servers&gt;</div><div class="line">  &lt;node index=&quot;1&quot;&gt;</div><div class="line">    &lt;host&gt;1.xxxx.sina.com.cn&lt;/host&gt;</div><div class="line">    &lt;port&gt;2181&lt;/port&gt;</div><div class="line">  &lt;/node&gt;</div><div class="line">  &lt;node index=&quot;1&quot;&gt;</div><div class="line">    &lt;host&gt;2.xxxx.sina.com.cn&lt;/host&gt;</div><div class="line">    &lt;port&gt;2181&lt;/port&gt;</div><div class="line">  &lt;/node&gt;</div><div class="line">  &lt;node index=&quot;1&quot;&gt;</div><div class="line">    &lt;host&gt;3.xxxxp.sina.com.cn&lt;/host&gt;</div><div class="line">    &lt;port&gt;2181&lt;/port&gt;</div><div class="line">  &lt;/node&gt;</div><div class="line">&lt;/zookeeper-servers&gt;</div><div class="line"></div><div class="line">&lt;!-- 数据压缩算法  --&gt;</div><div class="line">&lt;clickhouse_compression&gt;</div><div class="line">&lt;case&gt;</div><div class="line">  &lt;min_part_size&gt;10000000000&lt;/min_part_size&gt;</div><div class="line">  &lt;min_part_size_ratio&gt;0.01&lt;/min_part_size_ratio&gt;</div><div class="line">  &lt;method&gt;lz4&lt;/method&gt;</div><div class="line">&lt;/case&gt;</div><div class="line">&lt;/clickhouse_compression&gt;</div><div class="line"></div><div class="line">&lt;/yandex&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>user.xml</li>
+<li>关于用户名密码的问题，在另一篇文章有解释，这里只贴上配置文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</div><div class="line">&lt;yandex&gt;</div><div class="line">    &lt;profiles&gt;</div><div class="line">        &lt;!-- 读写用户设置  --&gt;</div><div class="line">        &lt;default&gt;</div><div class="line">            &lt;max_memory_usage&gt;10000000000&lt;/max_memory_usage&gt;</div><div class="line">            &lt;use_uncompressed_cache&gt;0&lt;/use_uncompressed_cache&gt;</div><div class="line">            &lt;load_balancing&gt;random&lt;/load_balancing&gt;</div><div class="line">        &lt;/default&gt;</div><div class="line"></div><div class="line">        &lt;!-- 只写用户设置  --&gt;</div><div class="line">        &lt;readonly&gt;</div><div class="line">            &lt;max_memory_usage&gt;10000000000&lt;/max_memory_usage&gt;</div><div class="line">            &lt;use_uncompressed_cache&gt;0&lt;/use_uncompressed_cache&gt;</div><div class="line">            &lt;load_balancing&gt;random&lt;/load_balancing&gt;</div><div class="line">            &lt;readonly&gt;1&lt;/readonly&gt;</div><div class="line">        &lt;/readonly&gt;</div><div class="line">    &lt;/profiles&gt;</div><div class="line"></div><div class="line">    &lt;!-- 配额  --&gt;</div><div class="line">    &lt;quotas&gt;</div><div class="line">        &lt;!-- Name of quota. --&gt;</div><div class="line">        &lt;default&gt;</div><div class="line">            &lt;interval&gt;</div><div class="line">                &lt;duration&gt;3600&lt;/duration&gt;</div><div class="line">                &lt;queries&gt;0&lt;/queries&gt;</div><div class="line">                &lt;errors&gt;0&lt;/errors&gt;</div><div class="line">                &lt;result_rows&gt;0&lt;/result_rows&gt;</div><div class="line">                &lt;read_rows&gt;0&lt;/read_rows&gt;</div><div class="line">                &lt;execution_time&gt;0&lt;/execution_time&gt;</div><div class="line">            &lt;/interval&gt;</div><div class="line">        &lt;/default&gt;</div><div class="line">    &lt;/quotas&gt;</div><div class="line"></div><div class="line">    &lt;users&gt;</div><div class="line">        &lt;!-- 读写用户  --&gt;</div><div class="line">        &lt;default&gt;</div><div class="line">            &lt;password_sha256_hex&gt;967f3bf355dddfabfca1c9f5cab39352b2ec1cd0b05f9e1e6b8f629705fe7d6e&lt;/password_sha256_hex&gt;</div><div class="line">            &lt;networks incl=&quot;networks&quot; replace=&quot;replace&quot;&gt;</div><div class="line">                &lt;ip&gt;::/0&lt;/ip&gt;</div><div class="line">            &lt;/networks&gt;</div><div class="line">            &lt;profile&gt;default&lt;/profile&gt;</div><div class="line">            &lt;quota&gt;default&lt;/quota&gt;</div><div class="line">        &lt;/default&gt;</div><div class="line"></div><div class="line">        &lt;!-- 只读用户  --&gt;</div><div class="line">        &lt;ck&gt;</div><div class="line">            &lt;password_sha256_hex&gt;967f3bf355dddfabfca1c9f5cab39352b2ec1cd0b05f9e1e6b8f629705fe7d6e&lt;/password_sha256_hex&gt;</div><div class="line">            &lt;networks incl=&quot;networks&quot; replace=&quot;replace&quot;&gt;</div><div class="line">                &lt;ip&gt;::/0&lt;/ip&gt;</div><div class="line">            &lt;/networks&gt;</div><div class="line">            &lt;profile&gt;readonly&lt;/profile&gt;</div><div class="line">            &lt;quota&gt;default&lt;/quota&gt;</div><div class="line">        &lt;/ck&gt;</div><div class="line">    &lt;/users&gt;</div><div class="line">&lt;/yandex&gt;</div></pre></td></tr></table></figure>
+<h3 id="简单分布式方案"><a href="#简单分布式方案" class="headerlink" title="简单分布式方案"></a>简单分布式方案</h3><ul>
+<li>MergeTree + Distributed</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> db.tb (<span class="built_in">date</span> <span class="built_in">Date</span>, ……) <span class="keyword">ENGINE</span> = MergeTree(<span class="built_in">date</span>, (<span class="built_in">date</span>, <span class="keyword">hour</span>, datetime), <span class="number">8192</span>)</div><div class="line"></div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> db.tb_all (<span class="built_in">date</span> <span class="built_in">Date</span>, ……) <span class="keyword">ENGINE</span> = <span class="keyword">Distributed</span>(bip_ck_cluster, <span class="string">'ck_test'</span>, <span class="string">'dagger'</span>, <span class="keyword">rand</span>())<span class="string">"</span></div></pre></td></tr></table></figure>
+<ul>
+<li>db.tb为本地表，数据只是在本地</li>
+<li><p>db.tb_all为分布式表，查询这个表，引擎自动把整个集群数据计算后返回</p>
+</li>
+<li><p>像不像一台手动挡的车</p>
+</li>
+</ul>
+<h3 id="分布式-高可用方案1"><a href="#分布式-高可用方案1" class="headerlink" title="分布式+高可用方案1"></a>分布式+高可用方案1</h3><ul>
+<li>上述方案，使用过后，会发现CK的性能真的是超级快，这里我就不在贴图了，有兴趣可以看我那122页的PPT</li>
+<li>但是有个问题，以上面3个节点为例，每个节点占1/3，如果宕机1个节点，直接丢掉1/3的数据，不能忍啊</li>
+<li>于是，就得考虑数据的安全性，即副本</li>
+<li>MergeTree + Distributed + 集群复制</li>
+<li><p>配置如下：<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/Snip20170901_27.png" alt="Snip20170901_27"></p>
+</li>
+<li><p>解释都在图里了，提一点，如果IP1挂了，IP2还在，不影响集群查询</p>
+</li>
+<li>这种方案为什么我们没有用呢?<ul>
+<li>如果IP1临时宕机，从宕机开始到恢复，期间的增量数据是可以补全的，依赖的IP2上的推送机制，会有临时目录</li>
+<li>但是，如果IP1彻底玩完，硬盘坏了，无法恢复，只能重做，引入一个IP5来替换IP1，这时候问题就来了，存量数据无法恢复</li>
+<li>这个方案之前有过争议，我坚持上面的观点，由于时间有限，没有详细测试，从CK原理上来讲，的确存在上述的问题，所以我们不用</li>
+</ul>
+</li>
+</ul>
+<h3 id="分布式-高可用方案2"><a href="#分布式-高可用方案2" class="headerlink" title="分布式+高可用方案2"></a>分布式+高可用方案2</h3><ul>
+<li>ReplicatedMergeTree + Distributed</li>
+<li>仅仅是把MergeTree引擎替换为ReplicatedMergeTree引擎</li>
+<li>ReplicatedMergeTree里，共享同一个ZK路径的表，会相互，注意是，相互同步数据</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> db.tb (<span class="built_in">date</span> <span class="built_in">Date</span>, ……) <span class="keyword">ENGINE</span> = ReplicatedMergeTree(<span class="string">'/clickhouse/db/tb/name'</span>, <span class="string">'node_name'</span>, <span class="built_in">date</span>, (<span class="built_in">date</span>, <span class="keyword">hour</span>, datetime), <span class="number">8192</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> db.tb_all (<span class="built_in">date</span> <span class="built_in">Date</span>, ……) <span class="keyword">ENGINE</span> = <span class="keyword">Distributed</span>(bip_ck_cluster, <span class="string">'ck_test'</span>, <span class="string">'dagger'</span>, <span class="keyword">rand</span>())<span class="string">"</span></div></pre></td></tr></table></figure>
+<ul>
+<li><p>示意图架构就是这样：<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15130927193425.jpg" alt=""></p>
+</li>
+<li><p>每个IDC有3个分片，各自占1/3数据</p>
+</li>
+<li>每个节点，依赖ZK，各自有2个副本</li>
+<li>这样，就不怕宕机啦~</li>
+</ul>
+<h2 id="CK分布式的问题"><a href="#CK分布式的问题" class="headerlink" title="CK分布式的问题"></a>CK分布式的问题</h2><ul>
+<li>写哪个表<ul>
+<li>可以写xxx_all，也可以写xxx本地表</li>
+<li>前者由于分布式表的逻辑简单，仅仅是转发请求，所以在转发安全性上，会有风险，并且rand的方式，可能会造成不均衡</li>
+<li>我们建议，通过DNS轮训，写本地表，这样最保险和均衡</li>
+</ul>
+</li>
+<li>读哪个表<ul>
+<li>毫无疑问，是xxx_all表</li>
+</ul>
+</li>
+<li>3个节点，要么都用，要么都不用，不能只用2个或者1个</li>
+<li>集群配置里，我们用了域名，本想着方便切换，但是CK只有在启动的时候，才会做解析<ul>
+<li>那故障了怎么切换?</li>
+<li>CK有一个厉害的地方，节点变动，无需重启，会自动加载</li>
+<li>利用上述特性，我们先去掉一个节点的配置，再加上这个节点的配置（DNS变更后），即可不重启就完成fail over</li>
+</ul>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>ClickHouse的性能令人印象深刻，但是，整个操作，又非常像一台手动挡的车，如果不是老司机，用着用着可能数据都没了，所以，掌握好原理，是开好这辆“超跑”的关键</li>
+<li>上述集群中，你是否觉得表管理非常麻烦呢？的确，又要区分集群，又要区分副本，建议写一个脚本来统一建表，我们就是这么搞的</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
+          
+            <a href="/tags/集群搭建/" rel="tag"># 集群搭建</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/12/ClickHouse-User-Password/" rel="next" title="ClickHouse用户名密码设置">
+                <i class="fa fa-chevron-left"></i> ClickHouse用户名密码设置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/12/13/ClickHouse-Cluster-Beginning-to-End/"
+           data-title="ClickHouse集群搭建从0到1" data-url="http://jackpgao.github.io/2017/12/13/ClickHouse-Cluster-Beginning-to-End/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Jack Gao" />
+          <p class="site-author-name" itemprop="name">Jack Gao</p>
+           
+              <p class="site-description motion-element" itemprop="description">Done is better than perfect!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/jackpgao/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件介绍"><span class="nav-number">1.</span> <span class="nav-text">组件介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker安装"><span class="nav-number">2.</span> <span class="nav-text">Docker安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPM包安装"><span class="nav-number">3.</span> <span class="nav-text">RPM包安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件解析"><span class="nav-number">4.</span> <span class="nav-text">配置文件解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpm启动方式"><span class="nav-number">5.</span> <span class="nav-text">rpm启动方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单机"><span class="nav-number">6.</span> <span class="nav-text">单机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式集群"><span class="nav-number">7.</span> <span class="nav-text">分布式集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CK是如何实现分布式的"><span class="nav-number">7.1.</span> <span class="nav-text">CK是如何实现分布式的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单分布式方案"><span class="nav-number">7.2.</span> <span class="nav-text">简单分布式方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式-高可用方案1"><span class="nav-number">7.3.</span> <span class="nav-text">分布式+高可用方案1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式-高可用方案2"><span class="nav-number">7.4.</span> <span class="nav-text">分布式+高可用方案2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CK分布式的问题"><span class="nav-number">8.</span> <span class="nav-text">CK分布式的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">8.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Gao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"JackpGao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+</body>
+</html>
