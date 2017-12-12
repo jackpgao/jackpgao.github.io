@@ -760,244 +760,34 @@
 
       
         
-          
-            <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15119326039423.jpg" alt=""></p>
+          <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15119326039423.jpg" alt=""></p>
 <blockquote>
-<p>原文：<a href="https://www.altinity.com/blog/2017/11/27/clickhouse-primary-keys" target="_blank" rel="external">点这里</a></p>
+<p>原文：<a href="https://www.altinity.com/blog/2017/11/27/clickhouse-primary-keys">点这里</a></p>
 <p>该文章原文是俄文，被人翻译成了英文，整体风格略显生硬。不喜欢看的，可以直接跳过，看最后我增加的结论。<br>另外，感谢@张健同学（一个着迷于源码的小鲜肉）的大力帮助~</p>
 <p>翻译有误请指正~</p>
 <p>ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人戏称为“喀秋莎数据库”。</p>
 <p>Altinity是国外一家从事ClickHouse咨询、服务的公司，该公司高管由ClickHouse开发者，以及来自Percona的专家组成。目前Altinity的ClickHouse云服务测试版已经上线。</p>
 </blockquote>
 <h2 id="本文背景"><a href="#本文背景" class="headerlink" title="本文背景"></a>本文背景</h2><ul>
-<li>Our guest author is ClickHouse evangelist Yegor Andreenko. Follow him on Twitter <a href="https://twitter.com/f1yegor" target="_blank" rel="external">@f1yegor</a>.</li>
-<li>This is a cross-post from: (<a href="https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324" target="_blank" rel="external">https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324</a>)</li>
+<li>Our guest author is ClickHouse evangelist Yegor Andreenko. Follow him on Twitter <a href="https://twitter.com/f1yegor">@f1yegor</a>.</li>
+<li>This is a cross-post from: (<a href="https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324">https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324</a>)</li>
 <li>Special thanks to Alexey Milovidov, ClickHouse developer, for providing material for this article.</li>
 </ul>
 <blockquote>
 <p>译文</p>
 </blockquote>
 <ul>
-<li>我们的客座嘉宾，是ClickHouse的布道师 Yegor Andreenko，这是他的Twitter：<a href="https://twitter.com/f1yegor" target="_blank" rel="external">@f1yegor</a></li>
-<li>这篇文章是从这里转载过来的： <a href="https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324" target="_blank" rel="external">https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324</a></li>
+<li>我们的客座嘉宾，是ClickHouse的布道师 Yegor Andreenko，这是他的Twitter：<a href="https://twitter.com/f1yegor">@f1yegor</a></li>
+<li>这篇文章是从这里转载过来的： <a href="https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324">https://medium.com/@f1yegor/clickhouse-primary-keys-2cf2a45d7324</a></li>
 <li>特别感谢ClickHouse的开发者Alexey Milovidov为本文提供的原始素材。</li>
 </ul>
-<hr>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><ul>
-<li>Recently I dived deep into ClickHouse . ClickHouse is column-store database by Yandex with great performance for analytical queries. For example check <a href="https://clickhouse.yandex/benchmark.html" target="_blank" rel="external">benchmark</a> and post of <a href="http://tech.marksblogg.com/billion-nyc-taxi-clickhouse.html" target="_blank" rel="external">Mark Litwintschik</a>.</li>
-<li>This is the translation of answer given by Alexey Milovidov (creator of ClickHouse) about <a href="https://groups.google.com/forum/#!searchin/clickhouse/%D0%B8%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%7Csort:relevance/clickhouse/eUrsP30VtSU/p4-pxgdXAgAJ" target="_blank" rel="external">composite primary key</a> .</li>
-</ul>
-<blockquote>
-<p>译文</p>
-</blockquote>
-<ul>
-<li>最近我开始深入研究ClickHouse。ClickHouse是Yandex开源的高性能的列式分析数据库。关于性能测试，可以看看这两篇：<ul>
-<li><a href="https://clickhouse.yandex/benchmark.html" target="_blank" rel="external">官方Benchmark</a> </li>
-<li><a href="http://tech.marksblogg.com/billion-nyc-taxi-clickhouse.html" target="_blank" rel="external">Mark Litwintschik的压测文章</a>.</li>
-</ul>
-</li>
-<li>这篇文章，其实是对ClickHouse的开发者Alexey Milovidov，在Google网上论坛，对<a href="https://groups.google.com/forum/#!searchin/clickhouse/%D0%B8%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%7Csort:relevance/clickhouse/eUrsP30VtSU/p4-pxgdXAgAJ" target="_blank" rel="external">ClickHouse主键问题</a>回复的翻译和总结（原贴为俄文）。</li>
-</ul>
-<h2 id="原问题"><a href="#原问题" class="headerlink" title="原问题"></a>原问题</h2><blockquote>
-<ol>
-<li>How many columns primary key could have? And what is layout of data on storage drive? Are there any theoretical/practical limits?</li>
-<li>Could columns with missing data at some rows be part of the primary key?</li>
-</ol>
-<p>CK的主键最多可以有多少个列组成？主键在磁盘上的存储形式是什么样的？理论或者实际使用过程中，有什么约束和限制么？</p>
-<p>如果某些列缺省了某些值，可以作为主键么？</p>
-</blockquote>
-<h2 id="ClickHouse的主键"><a href="#ClickHouse的主键" class="headerlink" title="ClickHouse的主键"></a>ClickHouse的主键</h2><ul>
-<li>Data in table of <a href="https://clickhouse.yandex/reference_en.html#MergeTree" target="_blank" rel="external">MergeTree</a> type stored in set of multiple parts. On average you could expect little number of parts (units-tens per month).</li>
-<li>In every part data stored sorted lexicographically by primary key. For example, if your primary key — (CounterID, Date), than rows would be located sorted by CounterID, and for rows with the same CounterID — sorted by Date.</li>
-<li>Data structure of primary key looks like an array of marks — it’s values of primary key every index_granularity rows.</li>
-<li>index_granularity — settings of MergeTree engine, default to 8192.</li>
-</ul>
-<blockquote>
-<p>译文</p>
-</blockquote>
-<ul>
-<li><a href="https://clickhouse.yandex/reference_en.html#MergeTree" target="_blank" rel="external">MergeTree</a> 系列的引擎，数据是由多组part文件组成的，一般来说，每个月（译者注：CK目前最小分区单元是月）会有几个part文件（这里的part就是block）。</li>
-<li>每一个part的数据，是按照主键进行字典序排列。例如，如果你有一个主键是(CounterID, Date)，数据行会首先按照CounterID排序，如果CounterID相同，按照Date排序。</li>
-<li>主键的数据结构，看起来像是标记文件组成的矩阵，这个标记文件就是每间隔<code>index_granularity</code>（索引粒度）行的主键值。</li>
-<li>MergeTree引擎中，默认的<code>index_granularity</code>设置是8192。</li>
-</ul>
-<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><ul>
-<li>We say that primary key is sparse index of sorted data. Let’s visualise it with only one part. (I should have equal length between marks, but it’s a bit imperfect to draw asci-art here):</li>
-<li>It’s convenient to represent marks as marks of ruler. Primary key allows effectively read range of data. For select ClickHouse chooses set of mark ranges that could contain target data.</li>
-</ul>
-<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15119327276629.jpg" alt=""></p>
-<ul>
-<li>主键是有序数据的稀疏索引。我们用图的方式看一部分的数据（原则上，图中应该保持标记的平均长度，但是用ASCI码的方式不太方便）。</li>
-<li>mark文件，就像一把尺子一样。主键对于范围查询的过滤效率非常高。对于查询操作，CK会读取一组可能包含目标数据的mark文件。</li>
-</ul>
-<ul>
-<li><p>This way, if you select CounterID IN (‘a’, ‘h’), server reads data with mark ranges [0, 3) and [6, 8).</p>
-</li>
-<li><p>例如，如果你的查询条件是CounterID IN (‘a’, ‘h’)，服务器将会读取标记文件为[0, 3]和[6, 8]之间对应的数据文件。</p>
-</li>
-<li><p>if you select CounterID IN (‘a’, ‘h’) AND Date = 3, server reads data with mark ranges [1, 3) and [7, 8).</p>
-</li>
-<li>如果你的查询条件是CounterID IN (‘a’, ‘h’)并且指定了Date = 3，服务器将会读取标记文件为[1, 3)和[7, 8)之间对应的数据文件。</li>
-</ul>
-<hr>
-<ul>
-<li>Sometimes primary key works even if only the second column condition presents in select:</li>
-<li><p>有时，主键的过滤效果并不是很好，比如，只有第二列出现在查询条件中：</p>
-</li>
-<li><p>if you select Date = 3, server reads data with mark ranges [1, 10).</p>
-</li>
-<li><p>如果查询条件只是Date = 3，服务器讲读取 [1, 10)之间对应的数据文件。</p>
-</li>
-<li><p>In our example it’s all marks except 0 — this is 90% of data. In this case index isn’t really effective, but still allows to skip part of data.</p>
-</li>
-<li><p>在上述例子中，mark文件除了0，其他90%的数据都需要扫描，虽然索引过滤效果不好，但是，仍然是可以跳过一些数据的。</p>
-</li>
-<li><p>On the other hand, if we have more data for one CounterID, index allows to skip wider ranges of Date in data.</p>
-</li>
-<li><p>另一方面，如果每个CounterID对应多条数据，索引将会跳过更多的Date数据。（？？？）</p>
-</li>
-<li><p>In any case, usage of index never could be less efficient than full scan.</p>
-</li>
-<li>综合来讲，使用索引，总是会比全表扫描要高效一些的。</li>
-</ul>
-<hr>
-<ul>
-<li>Sparse index could read unnecessary rows: during read of one range of primary key, index_granularity * 2 unnecessary rows in every part. It’s normal and you shouldn’t try to reduce index_granularity. ClickHouse designed to work effective with data by large batches of rows, that’s why a bit of additional column during read isn’t hurt the performance. index_granularity = 8192 — good value for most cases.</li>
-<li><p>稀疏索引会读取很多不必要的数据：读取primary key的每一个part，会多读取<code>index_granularity * 2</code>的数据。这对于稀疏索引来说很正常，也没有必要减少<code>index_granularity</code>的值。ClickHouse的设计，致力于高效的处理海量数据，这就是为什么一些多余的读取并不会有损性能。<code>index_granularity=8192</code>对于大多数场景都是比较好的选择。</p>
-</li>
-<li><p>Sparse index allows to work with tables that have enormous number of rows. And it always fits in RAM.</p>
-</li>
-<li><p>稀疏索引适用于海量数据表，并且，稀疏索引文件本身，放到内存是没有问题的。</p>
-</li>
-</ul>
-<hr>
-<ul>
-<li>Primary key isn’t unique. You can insert many rows with the same value of primary key.</li>
-<li><p>主键并不是唯一的，可以插入主键相同的数据行。</p>
-</li>
-<li><p>Primary key can also contain functional expressions.</p>
-<ul>
-<li>Example: (CounterID, EventDate, intHash32(UserID))</li>
-</ul>
-</li>
-<li><p>主键的构成，同样可以存在函数表达式。</p>
-<ul>
-<li>如，(CounterID, EventDate, intHash32(UserID))</li>
-</ul>
-</li>
-<li><p>Above it’s used to mix up the data of particular UserID for every tuple CounterID, EventDate. By-turn it’s used in sampling ( <a href="https://clickhouse.yandex/reference_en.html#SAMPLE" target="_blank" rel="external">https://clickhouse.yandex/reference_en.html#SAMPLE</a> clause).</p>
-</li>
-<li>上述例子中，通过使用Hash函数，把特定的UserID对应的CounterID和EventDate做了聚合，顺便，这种聚合方式，可以在<a href="https://clickhouse.yandex/reference_en.html#SAMPLE" target="_blank" rel="external">SAMPLE</a>这个功能中利用到。</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li><p>Let’s sum up what choice of primary key affects:</p>
-<ol>
-<li><p>The most important and obvious: primary key allows to read less data during SELECT queries. </p>
-<p> As shown in examples above it’s usually doesn’t make sense to include many columns into primary key for this purpose. Let’s say you have primary key (a, b). By adding one more column c: (a, b, c) makes sense only if it conforms with both conditions:</p>
-<ul>
-<li>if you have queries with filter for this column;     </li>
-<li>in your data could be quite long (several time bigger than index_granularity) ranges of data with the same values of (a, b).</li>
-</ul>
-<p>In other words when adding one more column will allow to skip big enough ranges of data.</p>
-<ol>
-<li>Data is sorted by primary key. That way data is more compressable. Sometimes it happens that by adding one more column into primary key data could be compressed better.</li>
-</ol>
-</li>
-<li><p>When you use different kinds of MergeTree with additional logic in merge: CollapsingMergeTree, SummingMergeTree and etc., primary key affects merge of data. For this reason it might be necessary to use more columns in primary key even when it’s not necessary for point 1.</p>
-</li>
-</ol>
-</li>
-</ul>
-<hr>
-<ul>
-<li><p>总结一下，主键改变会带来哪些影响：</p>
-<ol>
-<li><p>显而易见，主键最重要的作用，就是减少了查询操作中过多的数据读取。如上面的例子，给主键增加过多的列，并没有太大的意义。</p>
-<p> 举例来说，你有一个主键是(a, b)，增加一个列c，主键变成(a, b, c)，这种变动，只在下列情况有作用：</p>
-<ol>
-<li>你的查询使用到了c列</li>
-<li>以(a, b)组合，去重后的值，要远大于<code>index_granularity</code>的值。 </li>
-</ol>
-<p>换句话说，增加一个列到主键中去，可以跳过很多的数据。</p>
-</li>
-<li><p>数据是按照主键排序的，这样更容易做数据压缩。有时，主键增加一列后，会带来更好的数据压缩效果。</p>
-</li>
-<li><p>当使用MergeTree家族的其他引擎，比如CollapsingMergeTree, SummingMergeTree等，主键影响数据的merge操作。考虑到这个原因，有必要增加主键的宽度，而忽略第一种情况。</p>
-</li>
-</ol>
-</li>
-</ul>
-<hr>
-<ul>
-<li>Number of columns into primary key isn’t limited explicitly. Long primary key is usually useless. In real use case the maximum that I saw was ~20 columns (for SummingMergeTree), but I don’t recommend this variant.</li>
-<li>Long primary key will negatively affect insert performance and memory usage.</li>
-<li>Long primary key will not negatively affect the performance of SELECT queries.</li>
-</ul>
-<ul>
-<li>组成主键的列的数量，并没有明确规定。过长的主键通常来说没啥用。在日常经验中，我见过最长的主键是的是20个列（在SummingMergeTree引擎中场景下），但我并不建议这样的方式。</li>
-<li>过长的主键，会拖慢写入性能，并且会造成过多的内存占用。</li>
-<li>过长的主键，并不会影响对查询性能有太大的影响。</li>
-</ul>
-<hr>
-<ul>
-<li>During insert, missing values of all columns will be replaced with default values and written to table.</li>
-<li>插入过程中，如果部分字段没有指定确切的values，将会被默认值替代写入表中。</li>
-</ul>
-<h2 id="译者注"><a href="#译者注" class="headerlink" title="译者注"></a>译者注</h2><h3 id="关于最左原则"><a href="#关于最左原则" class="headerlink" title="关于最左原则"></a>关于最左原则</h3><ul>
-<li>了解MySQL的人，都知道一个重要的索引概念，最左原则，即对于(a, b, c)这样的索引，如果仅仅指定一个查询条件b或者c，是无法用到索引的，同样需要全表扫描，原因在于MySQL使用的是B树索引</li>
-<li>在CK里，主键索引用的并不是B树，而是稀疏索引。</li>
-<li><p>如图，在一个表的分区里，包括如下数据文件：</p>
-<ol>
-<li>校验值</li>
-<li>列名</li>
-<li>列.mrk</li>
-<li>列.bin</li>
-<li>主键<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/文件结构.png" alt="文件结构"></li>
-</ol>
-</li>
-<li><p>它们的关系如下：</p>
-<ol>
-<li>每隔8192行数据，是1个block</li>
-</ol>
-<ul>
-<li>主键会每隔8192，取一行主键列的数据，同时记录这是第几个block</li>
-<li>查询的时候，如果有索引，就通过索引定位到是哪个block，然后找到这个block对应的mrk文件</li>
-<li>mrk文件里记录的是某个block的数据集，在整列bin文件的哪个物理偏移位置</li>
-<li>加载数据到内存，之后并行化过滤<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/存储结构-new.png" alt="存储结构-ne"></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>这里分别举例看看是否依赖最左原则：<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/索引使用分析-new.png" alt="索引使用分析-ne"></li>
-</ul>
-<pre><code>- 在使用半主键的时候，如果出现了索引跳跃，即直接用了y字段，跳过x，实际上也是可以有一些数据过滤的，但是效果并不是很好
-- 所以你说这是最左原则还是不是呢？
-</code></pre><ul>
-<li>索引使用建议<ul>
-<li>线上使用务必指定date字段，限制过滤的数据行</li>
-<li>并不是所有的字段都要加入到主键中</li>
-<li>(date, hour, min, ts)大多数情况下会是比较好的选择，但是请在SQL里用上这几个条件</li>
-<li>实际生产中，用上date后，即使再全扫其他字段，在百亿以下的效率依然很高</li>
-</ul>
-</li>
-</ul>
-<h3 id="CK为啥这么高效？"><a href="#CK为啥这么高效？" class="headerlink" title="CK为啥这么高效？"></a>CK为啥这么高效？</h3><ul>
-<li>答案就是全表扫描</li>
-<li>那么问题来了，为什么全表扫描性能还这么快？</li>
-<li>在计算机系统里，有一个概念叫SIMD，即单指令流多数据流（Single Instruction Multiple Data），是一种采用一个控制器来控制多个处理器，同时对一组数据（又称“数据向量”）中的每一个分别执行相同的操作从而实现空间上的并行性的技术。这种方式，极大的提升了数据的查询效率，因此可以做到即使是全表扫，也能达到很高的性能。</li>
-<li>关于CK的高效<ol>
-<li>CK不能简单看成一个数据库，它用了大量的并行计算方式，把单机性能压榨到极限</li>
-</ol>
-<ul>
-<li>Hadoop生态非常依赖集群的数量，通过scale out的方式，让计算发生在本地，分而治之，通过M后再R的方式，提高执行效率。</li>
-<li>在实际的使用过程中，很明显的感觉到，10台规模的Hadoop和100台规模的Hadoop无法同日而语，原因就在于数据打的不够散</li>
-<li>CK的方式，可以理解为，通过列式存储的方式，本身查询的时候就做了Map化，再对每一列做操作的时候，又使用向量化操作，等于是又增加了并发，因此，单机效率极高</li>
-<li>理解有误请指正</li>
-</ul>
-</li>
-</ul>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/06/ClickHouse-Primary-key/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
