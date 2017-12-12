@@ -100,7 +100,7 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
 密码有2种，一">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ClickHouse用户名密码设置">
-<meta property="og:url" content="http://jackpgao.github.io/2017/11/20/ClickHouse-User-Password/index.html">
+<meta property="og:url" content="http://jackpgao.github.io/2017/12/12/ClickHouse-User-Password/index.html">
 <meta property="og:site_name" content="Jack Gao's Blog">
 <meta property="og:description" content="大家都说大数据有价值，但是，有多少人给大数据加了锁？
 ClickHouse集群，目前线上的都是裸奔，如果对方恶意请求数据，甚至删掉某些数据，就悲剧了
@@ -116,7 +116,8 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15111463605832.jpg">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/Snip20171120_8.png">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/Snip20171120_10.png">
-<meta property="og:updated_time" content="2017-11-28T08:45:26.000Z">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15130448096191.jpg">
+<meta property="og:updated_time" content="2017-12-12T02:14:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ClickHouse用户名密码设置">
 <meta name="twitter:description" content="大家都说大数据有价值，但是，有多少人给大数据加了锁？
@@ -158,7 +159,7 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
 
 
 
-  <link rel="canonical" href="http://jackpgao.github.io/2017/11/20/ClickHouse-User-Password/"/>
+  <link rel="canonical" href="http://jackpgao.github.io/2017/12/12/ClickHouse-User-Password/"/>
 
 
 
@@ -341,7 +342,7 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/11/20/ClickHouse-User-Password/">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/12/12/ClickHouse-User-Password/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jack Gao">
@@ -377,8 +378,8 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-20T10:55:04+08:00">
-                2017-11-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-12T10:55:04+08:00">
+                2017-12-12
               </time>
             
 
@@ -418,8 +419,8 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/11/20/ClickHouse-User-Password/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/20/ClickHouse-User-Password/" itemprop="commentCount"></span>
+                <a href="/2017/12/12/ClickHouse-User-Password/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/12/ClickHouse-User-Password/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -479,6 +480,9 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
 <h2 id="如何生成密码"><a href="#如何生成密码" class="headerlink" title="如何生成密码"></a>如何生成密码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">PASSWORD=$(base64 &lt; /dev/urandom | head -c8);</div><div class="line">echo &quot;$PASSWORD&quot;; echo -n &quot;$PASSWORD&quot; | sha256sum | tr -d &apos;-&apos;</div><div class="line"></div><div class="line">6lYaUiFi</div><div class="line">967f3bf355dddfabfca1c9f5cab39352b2ec1cd0b05f9e1e6b8f629705fe7d6e</div></pre></td></tr></table></figure>
 <h2 id="权限验证"><a href="#权限验证" class="headerlink" title="权限验证"></a>权限验证</h2><h3 id="默认用户登陆（可以不用指定用户名）"><a href="#默认用户登陆（可以不用指定用户名）" class="headerlink" title="默认用户登陆（可以不用指定用户名）"></a>默认用户登陆（可以不用指定用户名）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">root@10.xxxx:/data1/clickhouse  # clickhouse-client -h 127.0.0.1 -d gaopeng4 -m -u default --password 6lYaUiFi</div><div class="line">ClickHouse client version 1.1.54289.</div><div class="line">Connecting to database gaopeng4 at 127.0.0.1:9000 as user default.</div><div class="line">Connected to ClickHouse server version 1.1.54289.</div><div class="line"></div><div class="line">:) create database test1 ;       </div><div class="line"></div><div class="line">CREATE DATABASE test1</div><div class="line"></div><div class="line">Ok.</div><div class="line"></div><div class="line">0 rows in set. Elapsed: 0.002 sec. </div><div class="line"></div><div class="line">:) ^C</div></pre></td></tr></table></figure>
 <h3 id="ck用户登陆"><a href="#ck用户登陆" class="headerlink" title="ck用户登陆"></a>ck用户登陆</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">root@10.xxxx:/data1/clickhouse  # clickhouse-client -h 127.0.0.1 -d gaopeng4 -m -u ck --password 6lYaUiFi     </div><div class="line">ClickHouse client version 1.1.54289.</div><div class="line">Connecting to database gaopeng4 at 127.0.0.1:9000 as user ck.</div><div class="line">Connected to ClickHouse server version 1.1.54289.</div><div class="line"></div><div class="line">:) create database test2 ;  </div><div class="line"></div><div class="line">CREATE DATABASE test2</div><div class="line"></div><div class="line">Received exception from server:</div><div class="line">Code: 164. DB::Exception: Received from 127.0.0.1:9000. DB::Exception: Cannot execute query in readonly mode. </div><div class="line"></div><div class="line">0 rows in set. Elapsed: 0.014 sec.</div></pre></td></tr></table></figure>
+<h2 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h2><ul>
+<li>如果使用了分布式表，需要在集群的配置文件里，增加分片的用户名密码<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15130448096191.jpg" alt=""></li>
+</ul>
 
       
     </div>
@@ -517,8 +521,8 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/19/MacOS-Free-NTFS-Drive/" rel="next" title="Mac OS上免费的NTFS驱动">
-                <i class="fa fa-chevron-left"></i> Mac OS上免费的NTFS驱动
+              <a href="/2017/12/06/ClickHouse-Primary-key/" rel="next" title="ClickHouse主键探讨[译文+补充]">
+                <i class="fa fa-chevron-left"></i> ClickHouse主键探讨[译文+补充]
               </a>
             
           </div>
@@ -526,10 +530,6 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/11/28/ClickHouse-Data-Compression/" rel="prev" title="ClickHouse数据压缩[译文]">
-                ClickHouse数据压缩[译文] <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -558,8 +558,8 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/11/20/ClickHouse-User-Password/"
-           data-title="ClickHouse用户名密码设置" data-url="http://jackpgao.github.io/2017/11/20/ClickHouse-User-Password/">
+      <div class="ds-thread" data-thread-key="2017/12/12/ClickHouse-User-Password/"
+           data-title="ClickHouse用户名密码设置" data-url="http://jackpgao.github.io/2017/12/12/ClickHouse-User-Password/">
       </div>
     
   </div>
@@ -672,7 +672,7 @@ profile配置，最大内存、负载方式等（没有特别关注，可见官�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Config概览"><span class="nav-number">1.</span> <span class="nav-text">Config概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我们的config文件"><span class="nav-number">2.</span> <span class="nav-text">我们的config文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置解读"><span class="nav-number">3.</span> <span class="nav-text">配置解读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何生成密码"><span class="nav-number">4.</span> <span class="nav-text">如何生成密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#权限验证"><span class="nav-number">5.</span> <span class="nav-text">权限验证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#默认用户登陆（可以不用指定用户名）"><span class="nav-number">5.1.</span> <span class="nav-text">默认用户登陆（可以不用指定用户名）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ck用户登陆"><span class="nav-number">5.2.</span> <span class="nav-text">ck用户登陆</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Config概览"><span class="nav-number">1.</span> <span class="nav-text">Config概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我们的config文件"><span class="nav-number">2.</span> <span class="nav-text">我们的config文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置解读"><span class="nav-number">3.</span> <span class="nav-text">配置解读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何生成密码"><span class="nav-number">4.</span> <span class="nav-text">如何生成密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#权限验证"><span class="nav-number">5.</span> <span class="nav-text">权限验证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#默认用户登陆（可以不用指定用户名）"><span class="nav-number">5.1.</span> <span class="nav-text">默认用户登陆（可以不用指定用户名）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ck用户登陆"><span class="nav-number">5.2.</span> <span class="nav-text">ck用户登陆</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Update"><span class="nav-number">6.</span> <span class="nav-text">Update</span></a></li></ol></div>
             
 
           </div>
