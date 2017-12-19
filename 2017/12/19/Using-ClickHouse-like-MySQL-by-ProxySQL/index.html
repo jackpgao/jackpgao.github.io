@@ -1,0 +1,875 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ClickHouse,MySQL,ProxySQL," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="用户访问ClickHouse，需要默认的客户端clickhouse-client，但是这个工具不够友好：
+
+需要额外安装，并且使用上，不是那么nice
+clickhouse-client其实是clickhouse的软连接，即要么全装，要么不用
+
+啥最普及啊？答：MySQL
+基本所有的服务器都装了mysql，注意，这里指的是mysql-client，就是那个让你用命令行连接到MySQL服务的那个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Using ClickHouse like MySQL by ProxySQL">
+<meta property="og:url" content="http://jackpgao.github.io/2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/index.html">
+<meta property="og:site_name" content="Jack Gao's Blog">
+<meta property="og:description" content="用户访问ClickHouse，需要默认的客户端clickhouse-client，但是这个工具不够友好：
+
+需要额外安装，并且使用上，不是那么nice
+clickhouse-client其实是clickhouse的软连接，即要么全装，要么不用
+
+啥最普及啊？答：MySQL
+基本所有的服务器都装了mysql，注意，这里指的是mysql-client，就是那个让你用命令行连接到MySQL服务的那个">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15136705058755.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15136693692548.jpg">
+<meta property="og:updated_time" content="2017-12-19T11:12:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Using ClickHouse like MySQL by ProxySQL">
+<meta name="twitter:description" content="用户访问ClickHouse，需要默认的客户端clickhouse-client，但是这个工具不够友好：
+
+需要额外安装，并且使用上，不是那么nice
+clickhouse-client其实是clickhouse的软连接，即要么全装，要么不用
+
+啥最普及啊？答：MySQL
+基本所有的服务器都装了mysql，注意，这里指的是mysql-client，就是那个让你用命令行连接到MySQL服务的那个">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15136705058755.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'YZ27AIO4SX',
+      apiKey: '9b9cf00eff4aac0ae53f6891931c3b5a',
+      indexName: 'jackpgao.github.io',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackpgao.github.io/2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/"/>
+
+
+
+
+
+  <title> Using ClickHouse like MySQL by ProxySQL | Jack Gao's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack Gao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">All great achievements require time.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Using ClickHouse like MySQL by ProxySQL
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-19T19:10:15+08:00">
+                2017-12-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClickHouse/" itemprop="url" rel="index">
+                    <span itemprop="name">ClickHouse</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15136705058755.png" alt=""></p>
+<blockquote>
+<p>用户访问ClickHouse，需要默认的客户端clickhouse-client，但是这个工具不够友好：</p>
+<ol>
+<li>需要额外安装，并且使用上，不是那么nice</li>
+<li>clickhouse-client其实是clickhouse的软连接，即要么全装，要么不用</li>
+</ol>
+<p>啥最普及啊？<br>答：MySQL</p>
+<p>基本所有的服务器都装了mysql，注意，这里指的是mysql-client，就是那个让你用命令行连接到MySQL服务的那个命令</p>
+<p>ProxySQL是众多MySQL中间件中的佼佼者，一直被Percona推崇，最近他们也放出了支持ClickHouse的版本</p>
+<p>因此，今天的话题就是：<br>ClickHouse+ProxySQL = Using ClickHouse like MySQL</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><ul>
+<li><p><a href="https://github.com/sysown/proxysql/releases/tag/v1.4.3" target="_blank" rel="external">https://github.com/sysown/proxysql/releases/tag/v1.4.3</a></p>
+</li>
+<li><p>注意下载ClickHouse打头的包<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15136693692548.jpg" alt=""></p>
+</li>
+<li><p>安装依赖</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install   perl-DBD-MySQL</div></pre></td></tr></table></figure>
+<ul>
+<li>注意<ul>
+<li>支持ClickHouse的ProxySQL版本，只支持Ubuntu 16, Debian 9, CentOS 7, and Fedora 24，其他版本的不要往下看了</li>
+</ul>
+</li>
+</ul>
+<h2 id="启动ProxySQL"><a href="#启动ProxySQL" class="headerlink" title="启动ProxySQL"></a>启动ProxySQL</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># 默认配置文件是这个：</div><div class="line">/etc/proxysql.cnf </div><div class="line"></div><div class="line"># 默认是没有这个数据目录的:</div><div class="line">mkdir /var/lib/proxysql</div><div class="line"></div><div class="line"># 启动</div><div class="line">proxysql --clickhouse-server</div><div class="line"></div><div class="line"># ProxySQL默认会以daemon的方式在后台</div></pre></td></tr></table></figure>
+<h2 id="创建ClickHouse用户"><a href="#创建ClickHouse用户" class="headerlink" title="创建ClickHouse用户"></a>创建ClickHouse用户</h2><ul>
+<li>用户通过MySQL协议，访问ProxySQL，ProxySQL代理请求访问ClickHouse</li>
+<li>在第一步里，需要一个密码，这个密码不是ClickHouse的，而是访问ProxySQL的</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"># 登陆本地的ProxySQL</div><div class="line"># ProxySQL端口是6032，默认用户名密码在配置文件里写有</div><div class="line"></div><div class="line">root@10.x.x.x.x:/root  # mysql -h 127.0.0.1 -P 6032  -uadmin -padmin</div><div class="line">Welcome to the MariaDB monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 3</div><div class="line">Server version: 5.5.30 (ProxySQL Admin Module)</div><div class="line"></div><div class="line">Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">MySQL [(none)]&gt; INSERT INTO clickhouse_users VALUES (&apos;clicku&apos;,&apos;clickp&apos;,1,100);</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line"></div><div class="line">MySQL [(none)]&gt; select * from clickhouse_users ; </div><div class="line">+----------+----------+--------+-----------------+</div><div class="line">| username | password | active | max_connections |</div><div class="line">+----------+----------+--------+-----------------+</div><div class="line">| clicku   | clickp   | 1      | 100             |</div><div class="line">+----------+----------+--------+-----------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line"></div><div class="line">MySQL [(none)]&gt; LOAD CLICKHOUSE USERS TO RUNTIME;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">MySQL [(none)]&gt; SAVE CLICKHOUSE USERS TO DISK;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div></pre></td></tr></table></figure>
+<h2 id="通过MySQL客户端连接ClickHouse"><a href="#通过MySQL客户端连接ClickHouse" class="headerlink" title="通过MySQL客户端连接ClickHouse"></a>通过MySQL客户端连接ClickHouse</h2><ul>
+<li>ProxySQL默认开启6090端口，来接收用户对ClickHouse的访问</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># 使用上面的用户名和密码</div><div class="line"># 如果是不同机器，记得改IP</div><div class="line"></div><div class="line">root@10.x.x.x.x:/root  # mysql -h 127.0.0.1 -P 6090  -uclicku -pclickp --prompt &quot;ProxySQL-ClickHouse&gt; &quot; </div><div class="line">Welcome to the MariaDB monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 13</div><div class="line">Server version: 5.5.30 (ProxySQL ClickHouse Module)</div><div class="line"></div><div class="line">Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">ProxySQL-ClickHouse&gt;</div></pre></td></tr></table></figure>
+<h2 id="执行ClickHouse操作"><a href="#执行ClickHouse操作" class="headerlink" title="执行ClickHouse操作"></a>执行ClickHouse操作</h2><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">MySQL [(none)]&gt; select version(); </div><div class="line">+-------------------+</div><div class="line">| version           |</div><div class="line">+-------------------+</div><div class="line">| 5.5.30-clickhouse |</div><div class="line">+-------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line"></div><div class="line"></div><div class="line">MySQL [(none)]&gt; select now();</div><div class="line">+---------------------+</div><div class="line">| now()               |</div><div class="line">+---------------------+</div><div class="line">| 2017-12-19 15:45:26 |</div><div class="line">+---------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line"></div><div class="line">MySQL [(none)]&gt; select today(); </div><div class="line">+------------+</div><div class="line">| today()    |</div><div class="line">+------------+</div><div class="line">| 2017-12-19 |</div><div class="line">+------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line"></div><div class="line"># 我们的某个表 600多亿</div><div class="line">ProxySQL-ClickHouse&gt; select count(*) from XXXXX ; </div><div class="line">+-------------+</div><div class="line">| count()     |</div><div class="line">+-------------+</div><div class="line">| 62699641362 |</div><div class="line">+-------------+</div><div class="line">1 row in set (11.20 sec)</div><div class="line"></div><div class="line"># 另一个表 1300多亿</div><div class="line">ProxySQL-ClickHouse&gt; select count(*) from edge_msg_all;</div><div class="line">+--------------+</div><div class="line">| count()      |</div><div class="line">+--------------+</div><div class="line">| 131929726359 |</div><div class="line">+--------------+</div><div class="line">1 row in set (5.30 sec)</div></pre></td></tr></table></figure>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>缺乏clickhouse-client默认的<ol>
+<li>SQL格式化</li>
+<li>SQL进度条</li>
+</ol>
+</li>
+<li>这2个功能非常之好用，格式化后的SQL非常美观，如果是要发给其他人的SQL，会显得非常专业</li>
+<li>进度条功能可以明显看到SQL的执行进度，对于明显慢的不能再慢的SQL，可以及时终止掉，防止把集群资源跑满</li>
+</ul>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
+<li>ProxySQL目前对后端的ClickHouse支持很弱，必须是本地的ClickHouse，并且，这个ClickHouse不能有密码，目前是写死的，不支持修改</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>MySQL方式访问ClickHouse，可以减少ClickHouse对于新手的陌生感，非常值得一试</li>
+<li>ProxySQL还有很多先进的功能，这里没有展开。不确定是否提供了SQL的控制功能，如果有，那简直太好了</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a href="https://github.com/sysown/proxysql/wiki/ClickHouse-Support" target="_blank" rel="external">https://github.com/sysown/proxysql/wiki/ClickHouse-Support</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+            <a href="/tags/ProxySQL/" rel="tag"># ProxySQL</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/18/ClickHouse-Recovery-basedon-Replication/" rel="next" title="ClickHouse基于复制的故障恢复测试">
+                <i class="fa fa-chevron-left"></i> ClickHouse基于复制的故障恢复测试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/"
+           data-title="Using ClickHouse like MySQL by ProxySQL" data-url="http://jackpgao.github.io/2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Jack Gao" />
+          <p class="site-author-name" itemprop="name">Jack Gao</p>
+           
+              <p class="site-description motion-element" itemprop="description">Done is better than perfect!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/jackpgao/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Install"><span class="nav-number">1.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动ProxySQL"><span class="nav-number">2.</span> <span class="nav-text">启动ProxySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建ClickHouse用户"><span class="nav-number">3.</span> <span class="nav-text">创建ClickHouse用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过MySQL客户端连接ClickHouse"><span class="nav-number">4.</span> <span class="nav-text">通过MySQL客户端连接ClickHouse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行ClickHouse操作"><span class="nav-number">5.</span> <span class="nav-text">执行ClickHouse操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">6.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">7.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">9.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Gao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"JackpGao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+</body>
+</html>
