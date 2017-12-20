@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="ClickHouse,MySQL,ProxySQL," />
+  <meta name="keywords" content="MySQL,ClickHouse,ProxySQL," />
 
 
 
@@ -107,7 +107,7 @@ clickhouse-client其实是clickhouse的软连接，即要么全装，要么不�
 基本所有的服务器都装了mysql，注意，这里指的是mysql-client，就是那个让你用命令行连接到MySQL服务的那个">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15136705058755.png">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15136693692548.jpg">
-<meta property="og:updated_time" content="2017-12-19T11:12:16.000Z">
+<meta property="og:updated_time" content="2017-12-20T11:24:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Using ClickHouse like MySQL by ProxySQL">
 <meta name="twitter:description" content="用户访问ClickHouse，需要默认的客户端clickhouse-client，但是这个工具不够友好：
@@ -490,6 +490,33 @@ clickhouse-client其实是clickhouse的软连接，即要么全装，要么不�
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
 <li><a href="https://github.com/sysown/proxysql/wiki/ClickHouse-Support" target="_blank" rel="external">https://github.com/sysown/proxysql/wiki/ClickHouse-Support</a></li>
 </ul>
+<h2 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h2><ul>
+<li><p>调研ProxySQL其实有一个明显的目的，那就是支持可视化方面的需求</p>
+</li>
+<li><p>在github上有非常多的数据可视化项目，如Superset、SQLPad、Metabase、Franchise等，但是只有Superset官方支持了ClickHouse，其他几个都不支持，但是支持MySQL</p>
+</li>
+<li><p>虽然ProxySQL给ClickHouse做了一层包装，可以用MySQL协议访问ClickHouse，但是由于各家具体产品在实际操作过程中的命令不同，导致无法使用</p>
+</li>
+<li><p>Metabase</p>
+<ul>
+<li>执行了一个命令，<code>select CONCAT(DATE_FORMAT(current_timestamp, &#39;%Y-%m-%d %H:%i:%S.%f&#39; ), &#39; &#39;, @@system_time_zone);</code>，这做不到啊</li>
+</ul>
+</li>
+<li><p>SqlPad</p>
+<ul>
+<li>获取DB信息的时候，需要查询INFORMATION_SCHEMA.columns，这个也做不到啊</li>
+</ul>
+</li>
+<li><p>Franchise直接没跑通</p>
+</li>
+<li><p>Redash</p>
+<ul>
+<li>安装复杂，还要额外依赖PG和Redis，没试</li>
+</ul>
+</li>
+<li><p>我们觉得还是<strong>继续用Superset</strong>吧。。。。</p>
+</li>
+</ul>
 
       
     </div>
@@ -513,9 +540,9 @@ clickhouse-client其实是clickhouse的软连接，即要么全装，要么不�
       
         <div class="post-tags">
           
-            <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
-          
             <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+            <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
           
             <a href="/tags/ProxySQL/" rel="tag"># ProxySQL</a>
           
@@ -681,7 +708,7 @@ clickhouse-client其实是clickhouse的软连接，即要么全装，要么不�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Install"><span class="nav-number">1.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动ProxySQL"><span class="nav-number">2.</span> <span class="nav-text">启动ProxySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建ClickHouse用户"><span class="nav-number">3.</span> <span class="nav-text">创建ClickHouse用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过MySQL客户端连接ClickHouse"><span class="nav-number">4.</span> <span class="nav-text">通过MySQL客户端连接ClickHouse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行ClickHouse操作"><span class="nav-number">5.</span> <span class="nav-text">执行ClickHouse操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">6.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">7.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">9.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Install"><span class="nav-number">1.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动ProxySQL"><span class="nav-number">2.</span> <span class="nav-text">启动ProxySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建ClickHouse用户"><span class="nav-number">3.</span> <span class="nav-text">创建ClickHouse用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过MySQL客户端连接ClickHouse"><span class="nav-number">4.</span> <span class="nav-text">通过MySQL客户端连接ClickHouse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行ClickHouse操作"><span class="nav-number">5.</span> <span class="nav-text">执行ClickHouse操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">6.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">7.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">9.</span> <span class="nav-text">Reference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Update"><span class="nav-number">10.</span> <span class="nav-text">Update</span></a></li></ol></div>
             
 
           </div>
