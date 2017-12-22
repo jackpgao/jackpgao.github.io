@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="ClickHouse,Error,CSV," />
+  <meta name="keywords" content="ClickHouse,文件SQL," />
 
 
 
@@ -87,39 +87,18 @@
 
 
 
-<meta name="description" content="原文
-翻译有误请指正~
-ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人戏称为“喀秋莎数据库”。
-
-背景
-有人导入700G的CSV文件，结果因为一些行异常，导入失败，报错：
-
-123Code: 27. DB::Exception: Cannot parse input: expected , before: an,,113.143.235.107,,,https://ads.">
+<meta name="description" content="今天的主题，不用写序言，看上图就懂">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ClickHouse导入CSV文件跳过错误【译文】">
-<meta property="og:url" content="http://jackpgao.github.io/2017/12/03/ClickHouse-Skip-Error/index.html">
+<meta property="og:title" content="ClickHouse奇技淫巧系列之SQL查文件">
+<meta property="og:url" content="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/index.html">
 <meta property="og:site_name" content="Jack Gao's Blog">
-<meta property="og:description" content="原文
-翻译有误请指正~
-ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人戏称为“喀秋莎数据库”。
-
-背景
-有人导入700G的CSV文件，结果因为一些行异常，导入失败，报错：
-
-123Code: 27. DB::Exception: Cannot parse input: expected , before: an,,113.143.235.107,,,https://ads.">
-<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15122859102239.png">
-<meta property="og:updated_time" content="2017-12-03T07:30:39.000Z">
+<meta property="og:description" content="今天的主题，不用写序言，看上图就懂">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/没有什么是1个SQL解决不了的.jpg">
+<meta property="og:updated_time" content="2017-12-22T07:04:21.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ClickHouse导入CSV文件跳过错误【译文】">
-<meta name="twitter:description" content="原文
-翻译有误请指正~
-ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人戏称为“喀秋莎数据库”。
-
-背景
-有人导入700G的CSV文件，结果因为一些行异常，导入失败，报错：
-
-123Code: 27. DB::Exception: Cannot parse input: expected , before: an,,113.143.235.107,,,https://ads.">
-<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15122859102239.png">
+<meta name="twitter:title" content="ClickHouse奇技淫巧系列之SQL查文件">
+<meta name="twitter:description" content="今天的主题，不用写序言，看上图就懂">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/没有什么是1个SQL解决不了的.jpg">
 
 
 
@@ -147,13 +126,13 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
 
 
 
-  <link rel="canonical" href="http://jackpgao.github.io/2017/12/03/ClickHouse-Skip-Error/"/>
+  <link rel="canonical" href="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/"/>
 
 
 
 
 
-  <title> ClickHouse导入CSV文件跳过错误【译文】 | Jack Gao's Blog </title>
+  <title> ClickHouse奇技淫巧系列之SQL查文件 | Jack Gao's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -330,7 +309,7 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/12/03/ClickHouse-Skip-Error/">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jack Gao">
@@ -351,7 +330,7 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
             
             
               
-                ClickHouse导入CSV文件跳过错误【译文】
+                ClickHouse奇技淫巧系列之SQL查文件
               
             
           </h1>
@@ -366,8 +345,8 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-03T15:25:38+08:00">
-                2017-12-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-22T15:03:32+08:00">
+                2017-12-22
               </time>
             
 
@@ -407,8 +386,8 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/12/03/ClickHouse-Skip-Error/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/03/ClickHouse-Skip-Error/" itemprop="commentCount"></span>
+                <a href="/2017/12/22/Using-SQL-with-File-by-ClickHouse/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/22/Using-SQL-with-File-by-ClickHouse/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -434,40 +413,49 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
       
 
       
-        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15122859102239.png" alt=""></p>
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/没有什么是1个SQL解决不了的.jpg" alt="没有什么是1个SQL解决不了的"></p>
 <blockquote>
-<p><a href="https://groups.google.com/forum/m/#!topic/clickhouse/U_Uc4omvoqc" target="_blank" rel="external">原文</a></p>
-<p>翻译有误请指正~</p>
-<p>ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人戏称为“喀秋莎数据库”。</p>
+<p>今天的主题，不用写序言，看上图就懂</p>
 </blockquote>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
-<li>有人导入700G的CSV文件，结果因为一些行异常，导入失败，报错：</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Code: 27. DB::Exception: Cannot parse input: expected , </div><div class="line">before: an,,113.143.235.107,,,</div><div class="line">https://ads.diamonds/c/3b4336c6-db9a-11e5-bea8-021988c520a1?cid=%COOKIEID&amp;campaignid=%HASH_CODE&amp;pubid=%ADD_CODE&amp;subid=%PLACEMENT,2017-09-0: (at row 865704)</div></pre></td></tr></table></figure>
-<ul>
-<li><p>很明显是因为一些特殊字段导致的（译者注）</p>
-</li>
-<li><p>于是在Google Groups里提问是否有跳过错误的参数。</p>
-</li>
-</ul>
 <a id="more"></a>
-<h2 id="回复"><a href="#回复" class="headerlink" title="回复"></a>回复</h2><ul>
-<li>在俄文的官方文档里，<a href="https://www.google.com/url?q=https%3A%2F%2Fclickhouse.yandex%2Fdocs%2Fru%2Foperations%2Fsettings%2Fsettings.html%23input-format-allow-errors-num&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNFCRHIPLCwuEfaHFnlWMIFJj9SULw" target="_blank" rel="external">有记录</a></li>
-<li>在英文的文档里，没有这个参数的描述（译者注，的确，这点吐槽一下）</li>
-<li>相关源码：</li>
+<h2 id="如何用SQL的方式操作一个文件"><a href="#如何用SQL的方式操作一个文件" class="headerlink" title="如何用SQL的方式操作一个文件"></a>如何用SQL的方式操作一个文件</h2><h3 id="先举例"><a href="#先举例" class="headerlink" title="先举例"></a>先举例</h3><ul>
+<li>想知道history命令里，敲得最多的是哪个？</li>
+<li>当然，sed，awk完全可以做到，但是，如果用SQL怎么做？</li>
 </ul>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/** Maximum amount of errors while reading text formats (like CSV, TSV). \</span></div><div class="line">  * In case of error, if both values are non-zero, \</div><div class="line">  *  and at least absolute or relative amount of errors is lower than corresponding value, \</div><div class="line">  *  will skip until next line and continue. \</div><div class="line">  */ \</div><div class="line">M(SettingUInt64, input_format_allow_errors_num, <span class="number">0</span>) \</div><div class="line">M(SettingFloat, input_format_allow_errors_ratio, <span class="number">0</span>)</div></pre></td></tr></table></figure>
-<h3 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h3><ul>
-<li>修改config.xml</li>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">history | awk '&#123;print $1"\t"$2&#125;' | clickhouse-client \</div><div class="line">--query="SELECT shell, count() AS c FROM history \</div><div class="line">GROUP BY shell ORDER BY c DESC limit 10 " \</div><div class="line">--external --file=- --name=history \</div><div class="line">--structure='id UInt16, shell String'  -h  127.0.0.1  </div><div class="line">ls      390</div><div class="line">cd      243</div><div class="line">clickhouse-client       173</div><div class="line">du      67</div><div class="line">vim     57</div><div class="line">htop    42</div><div class="line">cat     28</div><div class="line">history 27</div><div class="line">tailf   25</div><div class="line">mysql   24</div></pre></td></tr></table></figure>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><ul>
+<li>ClickHouse支持把一个外部文件，加载到内部的一个临时表中，对这个临时表进行SQL化操作</li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">input_format_allow_errors_num</span>&gt;</span>100<span class="tag">&lt;/<span class="name">input_format_allow_errors_num</span>&gt;</span></div></pre></td></tr></table></figure>
-<h2 id="译者注"><a href="#译者注" class="headerlink" title="译者注"></a>译者注</h2><h3 id="先吐槽"><a href="#先吐槽" class="headerlink" title="先吐槽"></a>先吐槽</h3><ul>
-<li><p>这么重要的参数，在英文官方文档里，居然没有</p>
-</li>
-<li><p>之后又Google发现了其他的用法：</p>
-</li>
+<h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">--external --file=... [--name=...] [--format=...] [--types=...|--structure=...]</div></pre></td></tr></table></figure>
+<ul>
+<li><code>--external</code> 表示这个操作是外部文件的</li>
+<li><code>--file=...</code> 指定一个文件，如果是标准输入，则写<code>-</code></li>
+<li><code>[--name=...]</code> 表名，如果忽略，默认给<code>_data</code></li>
+<li><code>[--format=...]</code> 列分隔符，默认是<code>TabSeparated</code></li>
+<li>`[–types=…|–structure=…] 这句不解释了，看上面的例子就好了</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">clickhouse-client --input_format_allow_errors_num=1 \</div><div class="line">--input_format_allow_errors_ratio=0.1 \</div><div class="line">--query=&quot;INSERT INTO test.formats_test FORMAT TSV&quot;</div></pre></td></tr></table></figure>
+<h3 id="再来一个测试"><a href="#再来一个测试" class="headerlink" title="再来一个测试"></a>再来一个测试</h3><ul>
+<li>为了模拟一个有意义的场景，我们选了ClickHouse的system.parts这个表，里面记录的是ClickHouse的分区信息，表结构如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">partition:                             201709</div><div class="line">name:                                  20170903_20170905_2_2963928_22</div><div class="line">replicated:                            0</div><div class="line">active:                                1</div><div class="line">marks:                                 23372</div><div class="line">rows:                                  191456971</div><div class="line">bytes:                                 93294984484</div><div class="line">modification_time:                     2017-09-05 23:37:33</div><div class="line">remove_time:                           0000-00-00 00:00:00</div><div class="line">refcount:                              2</div><div class="line">min_date:                              2017-09-03</div><div class="line">max_date:                              2017-09-05</div><div class="line">min_block_number:                      2</div><div class="line">max_block_number:                      2963928</div><div class="line">level:                                 22</div><div class="line">primary_key_bytes_in_memory:           93488</div><div class="line">primary_key_bytes_in_memory_allocated: 196608</div><div class="line">database:                              xx</div><div class="line">table:                                 xx</div><div class="line">engine:                                MergeTree</div></pre></td></tr></table></figure>
+<ul>
+<li>我们导出一份数据，作为测试文件</li>
+<li>默认导出的文件是tab分割</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">clickhouse-client -h  127.0.0.1 -m -d system -q &quot;select * from parts &quot; &gt; test.sql</div></pre></td></tr></table></figure>
+<ul>
+<li>目标SQL</li>
+<li>找某个表的分区数据，即有几个分区，分区文件多大</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">SELECT </div><div class="line">    partition, </div><div class="line">    count() AS number_of_parts, </div><div class="line">    formatReadableSize(sum(bytes)) AS sum_size</div><div class="line">FROM system.parts </div><div class="line">WHERE active AND (database = &apos;xxxx&apos;) AND (table = &apos;xxxx_msg&apos;)</div><div class="line">GROUP BY partition</div><div class="line">ORDER BY partition ASC</div></pre></td></tr></table></figure>
+<ul>
+<li>文件SQL</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">root@10.xxxx:/root  # wc -l test.sql </div><div class="line">11991 test.sql</div><div class="line">root@10.xxxx:/root  # clickhouse-client \</div><div class="line">--query=&quot;SELECT partition,  count() AS number_of_parts, \</div><div class="line">formatReadableSize(sum(bytes)) AS sum_size FROM parts  \</div><div class="line">WHERE active AND (database = &apos;xxxx&apos;) AND (table = &apos;xxxx_msg&apos;) \</div><div class="line">GROUP BY partition ORDER BY partition ASC ;&quot; \</div><div class="line">--external --file=test.sql --name=parts \</div><div class="line">--structure=&apos;partition UInt16,name String,replicated UInt16,active UInt16,marks UInt16,rows UInt16,bytes UInt16,modification_time String,remove_time String,refcount UInt16,min_date String,max_date String,min_block_number UInt16,max_block_number UInt16,level UInt16,primary_key_bytes_in_memory UInt16,primary_key_bytes_in_memory_allocated UInt16,database String,table String,engine String&apos;  \</div><div class="line">-h  127.0.0.1  </div><div class="line">201709  36      1.68 TiB</div><div class="line">201710  26      1.42 TiB</div><div class="line">201711  30      1.42 TiB</div><div class="line">201712  31      963.07 GiB</div></pre></td></tr></table></figure>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li>文件操作虽然方便，但是官方文档也提到了，如果是特别大的文件，还是不要这么玩了</li>
+<li>另外，这个文件SQL其实还是要依赖ClickHouse-Server的，如果你没有启动Server，玩不了的哦~</li>
+</ul>
 
       
     </div>
@@ -493,9 +481,7 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
           
             <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
           
-            <a href="/tags/Error/" rel="tag"># Error</a>
-          
-            <a href="/tags/CSV/" rel="tag"># CSV</a>
+            <a href="/tags/文件SQL/" rel="tag"># 文件SQL</a>
           
         </div>
       
@@ -508,8 +494,8 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/28/ClickHouse-Data-Compression/" rel="next" title="ClickHouse数据压缩[译文]">
-                <i class="fa fa-chevron-left"></i> ClickHouse数据压缩[译文]
+              <a href="/2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/" rel="next" title="Using ClickHouse like MySQL by ProxySQL">
+                <i class="fa fa-chevron-left"></i> Using ClickHouse like MySQL by ProxySQL
               </a>
             
           </div>
@@ -517,10 +503,6 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/06/ClickHouse-Primary-key/" rel="prev" title="ClickHouse主键探讨[译文+补充]">
-                ClickHouse主键探讨[译文+补充] <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -549,8 +531,8 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/12/03/ClickHouse-Skip-Error/"
-           data-title="ClickHouse导入CSV文件跳过错误【译文】" data-url="http://jackpgao.github.io/2017/12/03/ClickHouse-Skip-Error/">
+      <div class="ds-thread" data-thread-key="2017/12/22/Using-SQL-with-File-by-ClickHouse/"
+           data-title="ClickHouse奇技淫巧系列之SQL查文件" data-url="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/">
       </div>
     
   </div>
@@ -663,7 +645,7 @@ ClickHouse是来自“战斗民族”的高性能分析性数据库，圈内人�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回复"><span class="nav-number">2.</span> <span class="nav-text">回复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方式"><span class="nav-number">2.1.</span> <span class="nav-text">使用方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#译者注"><span class="nav-number">3.</span> <span class="nav-text">译者注</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先吐槽"><span class="nav-number">3.1.</span> <span class="nav-text">先吐槽</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何用SQL的方式操作一个文件"><span class="nav-number">1.</span> <span class="nav-text">如何用SQL的方式操作一个文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先举例"><span class="nav-number">1.1.</span> <span class="nav-text">先举例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">1.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#格式"><span class="nav-number">1.3.</span> <span class="nav-text">格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再来一个测试"><span class="nav-number">1.4.</span> <span class="nav-text">再来一个测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意事项"><span class="nav-number">2.</span> <span class="nav-text">注意事项</span></a></li></ol></div>
             
 
           </div>
