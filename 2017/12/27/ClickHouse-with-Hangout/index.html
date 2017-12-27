@@ -1,0 +1,856 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ClickHouse,Hangout," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="ClickHouse作为我们的重要数据仓库，接收了大量用于统计、分析的日志。
+那么这些数据是怎么进到ClickHouse的？
+在我们内部，ELK架构用的是比较多的，准确的来讲，是EHK，我们用Hangout替代了传统的Logstash。
+因此，在Hangout的基础上，我们开发了针对ClickHouse的数据写入插件，很轻松的完成海量数据的日志接入。
+本文作者@rickyChe，新浪大数据开发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hangout with ClickHouse【转载】">
+<meta property="og:url" content="http://jackpgao.github.io/2017/12/27/ClickHouse-with-Hangout/index.html">
+<meta property="og:site_name" content="Jack Gao's Blog">
+<meta property="og:description" content="ClickHouse作为我们的重要数据仓库，接收了大量用于统计、分析的日志。
+那么这些数据是怎么进到ClickHouse的？
+在我们内部，ELK架构用的是比较多的，准确的来讲，是EHK，我们用Hangout替代了传统的Logstash。
+因此，在Hangout的基础上，我们开发了针对ClickHouse的数据写入插件，很轻松的完成海量数据的日志接入。
+本文作者@rickyChe，新浪大数据开发">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15143659171018.jpg">
+<meta property="og:updated_time" content="2017-12-27T09:19:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hangout with ClickHouse【转载】">
+<meta name="twitter:description" content="ClickHouse作为我们的重要数据仓库，接收了大量用于统计、分析的日志。
+那么这些数据是怎么进到ClickHouse的？
+在我们内部，ELK架构用的是比较多的，准确的来讲，是EHK，我们用Hangout替代了传统的Logstash。
+因此，在Hangout的基础上，我们开发了针对ClickHouse的数据写入插件，很轻松的完成海量数据的日志接入。
+本文作者@rickyChe，新浪大数据开发">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15143659171018.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'YZ27AIO4SX',
+      apiKey: '9b9cf00eff4aac0ae53f6891931c3b5a',
+      indexName: 'jackpgao.github.io',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackpgao.github.io/2017/12/27/ClickHouse-with-Hangout/"/>
+
+
+
+
+
+  <title> Hangout with ClickHouse【转载】 | Jack Gao's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack Gao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">All great achievements require time.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/12/27/ClickHouse-with-Hangout/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Hangout with ClickHouse【转载】
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-27T17:19:11+08:00">
+                2017-12-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClickHouse/" itemprop="url" rel="index">
+                    <span itemprop="name">ClickHouse</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/27/ClickHouse-with-Hangout/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/27/ClickHouse-with-Hangout/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15143659171018.jpg" alt=""></p>
+<blockquote>
+<p>ClickHouse作为我们的重要数据仓库，接收了大量用于统计、分析的日志。</p>
+<p>那么这些数据是怎么进到ClickHouse的？</p>
+<p>在我们内部，ELK架构用的是比较多的，准确的来讲，是EHK，我们用Hangout替代了传统的Logstash。</p>
+<p>因此，在Hangout的基础上，我们开发了针对ClickHouse的数据写入插件，很轻松的完成海量数据的日志接入。</p>
+<p>本文作者@rickyChe，新浪大数据开发工程师，原文地址：<a href="https://www.zybuluo.com/rickyChen/note/1000077" target="_blank" rel="external">Hangout with ClickHouse</a></p>
+</blockquote>
+<a id="more"></a>
+<ul>
+<li><p>当我们部门发现了ClickHouse这么一个优秀数据存储仓库后，经过了一段时间的摸索测试，就把线上大部分与数据分析相关的业务迁移到了ClickHouse上。这篇文章将会介绍我们如何通过Kafka接入Nginx日志到ClickHouse中。当然，其他的应用日志也可以参照以下逻辑将数据接入ClickHouse。</p>
+</li>
+<li><p>我们最初使用Python脚本清洗日志写入ClickHouse，但是这样开发和维护都有一定的成本。后来我们使用<a href="https://github.com/childe/hangout" target="_blank" rel="external">Hangout</a>作为我们的数据清洗工具，Hangout是一个通用的日志分析工具，功能类同<a href="https://www.elastic.co/products/logstash" target="_blank" rel="external">Logstash</a>，可以把不同种类的日志处理后写入其他的地方，比如Kafka、Elasticsearch、ClickHouse。</p>
+</li>
+</ul>
+<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h2><ul>
+<li><p>我们假设Nginx日志已经推送到了Kafka。</p>
+</li>
+<li><p>Hangout已经提供了大量的插件支持我们的日志处理，下面是为了完成一个完整的配置需要另外下载的插件：</p>
+<ul>
+<li>Hangout-output-clickhouse： 专门为ClickHouse开发的Hangout输出插件<a href="https://github.com/RickyHuo/hangout-output-clickhouse" target="_blank" rel="external">https://github.com/RickyHuo/hangout-output-clickhouse</a></li>
+</ul>
+</li>
+<li><p>下面是我们安装Hangout以及Hangout-output-clickhouse插件的具体步骤：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mkdir hangout</div><div class="line">cd hangout</div><div class="line">wget https://github.com/childe/hangout/releases/download/0.3.0/hangout-dist-0.3.0-release-bin.zip</div><div class="line">unzip hangout-dist-0.3.0-release-bin.zip</div><div class="line">cd modules</div><div class="line">wget https://github.com/RickyHuo/hangout-output-clickhouse/releases/download/0.0.2/hangout-output-plugins-clickhouse-0.0.2-jar-with-dependencies.jar</div></pre></td></tr></table></figure>
+<h2 id="Configuration-Example-Nginx-Logs"><a href="#Configuration-Example-Nginx-Logs" class="headerlink" title="Configuration Example: Nginx Logs"></a>Configuration Example: Nginx Logs</h2><h3 id="Log-Sample"><a href="#Log-Sample" class="headerlink" title="Log Sample"></a>Log Sample</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">001.cms.msina..sinanode.com\`[27/Dec/2017:16:01:03 +0800]\`-\`&quot;GET /n/front/w636h3606893220.jpg/w720q75apl.webp HTTP/1.1&quot;\`&quot;SinaNews/201706071542.1 CFNetwork/758.1.6 Darwin/15.0.0&quot;\`200\`[127.0.0.1]\`-\`&quot;-&quot;\`0.021\`10640\`-\`127.0.0.1\`l.sinaimg.cn\`-</div></pre></td></tr></table></figure>
+<p><strong>Hangout配置包括三个部分：inputs、filters和outputs</strong></p>
+<h3 id="Input"><a href="#Input" class="headerlink" title="Input"></a>Input</h3><ul>
+<li>如下所示，是一个从Kafka读取数据流的配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">inputs:</div><div class="line">    - Kafka:</div><div class="line">        codec: plain</div><div class="line">        encoding: UTF8 # defaut UTF8</div><div class="line">        topic:</div><div class="line">            comos-proxy: 10</div><div class="line">        consumer_settings:</div><div class="line">            group.id: hangout_bip_cms</div><div class="line">            zookeeper.connect: localhost:2181 </div><div class="line">            auto.commit.interval.ms: &quot;60000&quot;</div><div class="line">            socket.receive.buffer.bytes: &quot;1048576&quot;</div><div class="line">            fetch.message.max.bytes: &quot;1048576&quot;</div></pre></td></tr></table></figure>
+<h3 id="Filters"><a href="#Filters" class="headerlink" title="Filters"></a>Filters</h3><ul>
+<li>在Filters部分，这里有一系列转化的步骤，包括正则解析、时间转换、类型转换等</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">filters:</div><div class="line">    - Grok:</div><div class="line">        match:</div><div class="line">            - &apos;%&#123;NOTSPACE:_hostname&#125;`\[%&#123;HTTPDATE:timestamp&#125;\]`%&#123;NOTSPACE:upstream&#125;`&quot;%&#123;NOTSPACE:_method&#125;\s%&#123;NOTSPACE:_uri&#125;\s%&#123;NOTSPACE:httpversion&#125;&quot;`%&#123;QS:_ua&#125;`%&#123;NUMBER:_http_code&#125;`\[%&#123;IP:_remote_addr&#125;\]`%&#123;NOTSPACE:unknow1&#125;`%&#123;QS:_reference&#125;`%&#123;NUMBER:_request_time&#125;`%&#123;NUMBER:_data_size&#125;`%&#123;NOTSPACE:unknow3&#125;`%&#123;IP:_http_x_forwarded_for&#125;`%&#123;NOTSPACE:_domain&#125;`%&#123;DATA:unknow4&#125;$&apos;</div><div class="line">        remove_fields: [&apos;message&apos;]</div><div class="line"></div><div class="line">    - Date:</div><div class="line">        src: timestamp</div><div class="line">        formats:</div><div class="line">            - &apos;dd/MMM/yyyy:HH:mm:ss Z&apos;</div><div class="line">        remove_fields: [&apos;timestamp&apos;]</div><div class="line">        target: utc_date</div><div class="line"></div><div class="line">    - Convert:</div><div class="line">        fields:</div><div class="line">            _request_time:</div><div class="line">                to: float</div><div class="line">                  </div><div class="line">    - Add:</div><div class="line">        fields:</div><div class="line">            date: &quot;$&#123;(utc_date)?substring(0, 10)&#125;&quot;</div><div class="line">            datetime: &quot;$&#123;(utc_date)?substring(0, 10) + &apos; &apos; + (utc_date)?substring(11, 19)&#125;&quot;</div><div class="line">            hour: &quot;$&#123;(utc_date)?substring(11, 13)&#125;&quot;</div><div class="line"></div><div class="line">    - Convert:</div><div class="line">        fields:</div><div class="line">            hour:</div><div class="line">                to: integer</div><div class="line">            minute:</div><div class="line">                to: integer</div><div class="line">            _data_size:</div><div class="line">                to: integer</div></pre></td></tr></table></figure>
+<h3 id="Outputs"><a href="#Outputs" class="headerlink" title="Outputs"></a>Outputs</h3><ul>
+<li>最后我们将处理好的结构化数据写入ClickHouse</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">outputs:</div><div class="line">   - com.sina.bip.hangout.outputs.Clickhouse:</div><div class="line">        host: localhost:8123</div><div class="line">        database: cms</div><div class="line">        table: cms_msg_all</div><div class="line">        fields: [&apos;date&apos;, &apos;datetime&apos;,&apos;hour&apos;, &apos;_hostname&apos;, &apos;_domain&apos;, &apos;_data_size&apos;, &apos;_uri&apos;, &apos;_request_time&apos;, &apos;_ua&apos;, &apos;_http_code&apos;, &apos;_remote_addr&apos;, &apos;_method&apos;, &apos;_reference&apos;, &apos;_url&apos;]</div><div class="line">        replace_include_fields: [&apos;_uri&apos;, &apos;_url&apos;]</div><div class="line">        bulk_size: 300</div></pre></td></tr></table></figure>
+<h3 id="ClickHouse-Schema"><a href="#ClickHouse-Schema" class="headerlink" title="ClickHouse Schema"></a>ClickHouse Schema</h3><ul>
+<li>当然， ClickHouse存储这些数据的前提是我们已经建立好了这些数据表。具体建表操作如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE cms.cms_msg</div><div class="line">(</div><div class="line">    date Date, </div><div class="line">    datetime DateTime, </div><div class="line">    hour Int8, </div><div class="line">    _uri String, </div><div class="line">    _url String, </div><div class="line">    _request_time Float32, </div><div class="line">    _http_code String, </div><div class="line">    _hostname String, </div><div class="line">    _domain String, </div><div class="line">    _http_x_forwarded_for String, </div><div class="line">    _remote_addr String, </div><div class="line">    _reference String, </div><div class="line">    _data_size Int32, </div><div class="line">    _method String, </div><div class="line">    _rs String, </div><div class="line">    _rs_time Float32, </div><div class="line">    _ua String</div><div class="line">) ENGINE = MergeTree(date, (hour, date), 8192)</div><div class="line"></div><div class="line"></div><div class="line">CREATE TABLE cms.cms_msg_all</div><div class="line">(</div><div class="line">    date Date, </div><div class="line">    datetime DateTime, </div><div class="line">    hour Int8, </div><div class="line">    _uri String, </div><div class="line">    _url String, </div><div class="line">    _request_time Float32, </div><div class="line">    _http_code String, </div><div class="line">    _hostname String, </div><div class="line">    _domain String, </div><div class="line">    _http_x_forwarded_for String, </div><div class="line">    _remote_addr String, </div><div class="line">    _reference String, </div><div class="line">    _data_size Int32, </div><div class="line">    _method String, </div><div class="line">    _ua String</div><div class="line">) ENGINE = Distributed(bip_ck_cluster, &apos;cms&apos;, &apos;cms_msg&apos;, rand())</div></pre></td></tr></table></figure>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><ul>
+<li>在这篇文章中，我们介绍了如何使用Hangout将Nginx日志文件写入ClickHouse中。Hangout从Kafka中读取原始日志，将其转换成为结构化的数据，因此能被我们的Hangout-output-clickhouse插件读取写入ClickHouse中。整个流程还有很多可以自定义和提升的地方，Hangout使用请参照<a href="https://github.com/childe/hangout/blob/master/README.MD" target="_blank" rel="external">Hangout README</a>，Hangout-output-clickhouse的更多功能请参照<a href="https://github.com/RickyHuo/hangout-output-clickhouse/blob/master/README.md" target="_blank" rel="external">README</a>。此外，我们在ClickHouse数据的基础上使用了SuperSet和Grafana作为我们的数据展示和监控工具。</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
+          
+            <a href="/tags/Hangout/" rel="tag"># Hangout</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/22/Using-SQL-with-File-by-ClickHouse/" rel="next" title="ClickHouse奇技淫巧系列之SQL查文件">
+                <i class="fa fa-chevron-left"></i> ClickHouse奇技淫巧系列之SQL查文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/12/27/ClickHouse-with-Hangout/"
+           data-title="Hangout with ClickHouse【转载】" data-url="http://jackpgao.github.io/2017/12/27/ClickHouse-with-Hangout/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Jack Gao" />
+          <p class="site-author-name" itemprop="name">Jack Gao</p>
+           
+              <p class="site-description motion-element" itemprop="description">Done is better than perfect!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/jackpgao/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prerequisites"><span class="nav-number">1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Configuration-Example-Nginx-Logs"><span class="nav-number">2.</span> <span class="nav-text">Configuration Example: Nginx Logs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Log-Sample"><span class="nav-number">2.1.</span> <span class="nav-text">Log Sample</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Input"><span class="nav-number">2.2.</span> <span class="nav-text">Input</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Filters"><span class="nav-number">2.3.</span> <span class="nav-text">Filters</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Outputs"><span class="nav-number">2.4.</span> <span class="nav-text">Outputs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClickHouse-Schema"><span class="nav-number">2.5.</span> <span class="nav-text">ClickHouse Schema</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">3.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Gao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"JackpGao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+</body>
+</html>
