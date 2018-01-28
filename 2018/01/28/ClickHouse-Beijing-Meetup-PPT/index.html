@@ -1,0 +1,898 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ClickHouse,Meetup," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="ClickHouse Beijing Meetup--数据分析领域的黑马-ClickHouse">
+<meta property="og:url" content="http://jackpgao.github.io/2018/01/28/ClickHouse-Beijing-Meetup-PPT/index.html">
+<meta property="og:site_name" content="Jack Gao's Blog">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.001.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.002.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.003.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.004.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.005.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.006.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.007.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.008.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.009.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.010.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.011.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.012.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.013.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.014.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.015.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.016.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.017.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.018.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.019.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.020.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.021.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.022.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.023.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.024.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.025.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.026.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.027.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.028.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.029.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.030.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.031.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.032.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.033.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.034.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.035.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.036.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.037.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.038.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.039.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.040.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.041.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.042.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.043.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.044.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.045.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.046.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.047.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.048.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.049.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.050.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.051.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.052.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.053.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.054.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.055.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.056.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.057.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.058.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.059.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.060.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.061.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.062.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.063.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.064.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.065.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.066.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.067.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.068.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.069.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.070.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.071.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.072.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.073.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.074.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.075.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.076.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.077.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.078.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.079.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.080.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.081.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.082.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.083.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.084.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.085.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.086.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.087.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.088.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.089.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.090.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.091.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.092.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.093.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.094.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.095.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.096.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.097.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.098.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.099.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.100.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.101.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.102.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.103.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.104.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.105.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.106.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.107.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.108.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.109.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.110.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.111.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.112.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.113.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.114.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.115.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.116.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.117.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.118.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.119.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.120.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.121.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.122.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.123.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.124.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.125.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.126.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.127.jpeg">
+<meta property="og:updated_time" content="2018-01-28T03:14:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ClickHouse Beijing Meetup--数据分析领域的黑马-ClickHouse">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.001.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'YZ27AIO4SX',
+      apiKey: '9b9cf00eff4aac0ae53f6891931c3b5a',
+      indexName: 'jackpgao.github.io',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackpgao.github.io/2018/01/28/ClickHouse-Beijing-Meetup-PPT/"/>
+
+
+
+
+
+  <title> ClickHouse Beijing Meetup--数据分析领域的黑马-ClickHouse | Jack Gao's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack Gao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">All great achievements require time.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2018/01/28/ClickHouse-Beijing-Meetup-PPT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ClickHouse Beijing Meetup--数据分析领域的黑马-ClickHouse
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-28T11:10:23+08:00">
+                2018-01-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClickHouse/" itemprop="url" rel="index">
+                    <span itemprop="name">ClickHouse</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/28/ClickHouse-Beijing-Meetup-PPT/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/01/28/ClickHouse-Beijing-Meetup-PPT/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.001.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.001"></p>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.002.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.002"></p>
+<a id="more"></a>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.003.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.003"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.004.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.004"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.005.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.005"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.006.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.006"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.007.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.007"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.008.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.008"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.009.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.009"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.010.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.010"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.011.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.011"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.012.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.012"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.013.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.013"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.014.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.014"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.015.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.015"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.016.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.016"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.017.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.017"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.018.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.018"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.019.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.019"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.020.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.020"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.021.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.021"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.022.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.022"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.023.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.023"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.024.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.024"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.025.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.025"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.026.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.026"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.027.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.027"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.028.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.028"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.029.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.029"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.030.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.030"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.031.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.031"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.032.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.032"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.033.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.033"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.034.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.034"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.035.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.035"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.036.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.036"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.037.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.037"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.038.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.038"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.039.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.039"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.040.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.040"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.041.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.041"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.042.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.042"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.043.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.043"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.044.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.044"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.045.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.045"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.046.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.046"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.047.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.047"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.048.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.048"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.049.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.049"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.050.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.050"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.051.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.051"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.052.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.052"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.053.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.053"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.054.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.054"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.055.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.055"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.056.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.056"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.057.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.057"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.058.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.058"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.059.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.059"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.060.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.060"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.061.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.061"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.062.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.062"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.063.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.063"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.064.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.064"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.065.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.065"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.066.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.066"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.067.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.067"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.068.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.068"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.069.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.069"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.070.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.070"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.071.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.071"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.072.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.072"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.073.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.073"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.074.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.074"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.075.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.075"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.076.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.076"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.077.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.077"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.078.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.078"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.079.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.079"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.080.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.080"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.081.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.081"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.082.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.082"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.083.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.083"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.084.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.084"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.085.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.085"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.086.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.086"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.087.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.087"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.088.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.088"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.089.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.089"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.090.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.090"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.091.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.091"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.092.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.092"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.093.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.093"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.094.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.094"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.095.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.095"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.096.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.096"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.097.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.097"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.098.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.098"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.099.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.099"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.100.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.100"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.101.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.101"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.102.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.102"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.103.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.103"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.104.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.104"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.105.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.105"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.106.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.106"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.107.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.107"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.108.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.108"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.109.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.109"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.110.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.110"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.111.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.111"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.112.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.112"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.113.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.113"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.114.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.114"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.115.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.115"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.116.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.116"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.117.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.117"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.118.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.118"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.119.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.119"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.120.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.120"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.121.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.121"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.122.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.122"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.123.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.123"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.124.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.124"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.125.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.125"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.126.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.126"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.127.jpeg" alt="数据分析领域的黑马-ClickHouse-新浪-高鹏-2018年01月27日.127"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
+          
+            <a href="/tags/Meetup/" rel="tag"># Meetup</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/27/ClickHouse-with-Hangout/" rel="next" title="Hangout with ClickHouse【转载】">
+                <i class="fa fa-chevron-left"></i> Hangout with ClickHouse【转载】
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2018/01/28/ClickHouse-Beijing-Meetup-PPT/"
+           data-title="ClickHouse Beijing Meetup--数据分析领域的黑马-ClickHouse" data-url="http://jackpgao.github.io/2018/01/28/ClickHouse-Beijing-Meetup-PPT/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Jack Gao" />
+          <p class="site-author-name" itemprop="name">Jack Gao</p>
+           
+              <p class="site-description motion-element" itemprop="description">Done is better than perfect!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/jackpgao/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Gao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"JackpGao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+</body>
+</html>
