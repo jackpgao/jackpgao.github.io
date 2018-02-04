@@ -1,0 +1,916 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="MySQL,ClickHouse,Data Analysis," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="为啥有这篇文章？
+很多人好奇ClickHouse，都听说过很快，但是到底有多恐怖？
+新建表还要理解ClickHouse的引擎和数据类型，好麻烦
+今天，用一个简单粗暴的功能，帮你一键导入MySQL的数据，无需人肉建表
+
+
+
+数据导入第一组123456789101112# du出的表大小5.5G    article_clientuser_sum.ibd# ClickHouse操作语句CREATE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用ClickHouse一键接管MySQL数据分析">
+<meta property="og:url" content="http://jackpgao.github.io/2018/02/04/ClickHouse-Use-MySQL-Data/index.html">
+<meta property="og:site_name" content="Jack Gao's Blog">
+<meta property="og:description" content="为啥有这篇文章？
+很多人好奇ClickHouse，都听说过很快，但是到底有多恐怖？
+新建表还要理解ClickHouse的引擎和数据类型，好麻烦
+今天，用一个简单粗暴的功能，帮你一键导入MySQL的数据，无需人肉建表
+
+
+
+数据导入第一组123456789101112# du出的表大小5.5G    article_clientuser_sum.ibd# ClickHouse操作语句CREATE">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/甘道夫.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15177074537021.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15177075572871.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/微信扫码.png">
+<meta property="og:updated_time" content="2018-02-04T02:00:57.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用ClickHouse一键接管MySQL数据分析">
+<meta name="twitter:description" content="为啥有这篇文章？
+很多人好奇ClickHouse，都听说过很快，但是到底有多恐怖？
+新建表还要理解ClickHouse的引擎和数据类型，好麻烦
+今天，用一个简单粗暴的功能，帮你一键导入MySQL的数据，无需人肉建表
+
+
+
+数据导入第一组123456789101112# du出的表大小5.5G    article_clientuser_sum.ibd# ClickHouse操作语句CREATE">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/甘道夫.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'YZ27AIO4SX',
+      apiKey: '9b9cf00eff4aac0ae53f6891931c3b5a',
+      indexName: 'jackpgao.github.io',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackpgao.github.io/2018/02/04/ClickHouse-Use-MySQL-Data/"/>
+
+
+
+
+
+  <title> 使用ClickHouse一键接管MySQL数据分析 | Jack Gao's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack Gao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">All great achievements require time.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2018/02/04/ClickHouse-Use-MySQL-Data/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用ClickHouse一键接管MySQL数据分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-04T09:58:39+08:00">
+                2018-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClickHouse/" itemprop="url" rel="index">
+                    <span itemprop="name">ClickHouse</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/04/ClickHouse-Use-MySQL-Data/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/04/ClickHouse-Use-MySQL-Data/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/甘道夫.jpg" alt="甘道夫"></p>
+<ul>
+<li>为啥有这篇文章？<ul>
+<li>很多人好奇ClickHouse，都听说过很快，但是到底有多恐怖？</li>
+<li>新建表还要理解ClickHouse的引擎和数据类型，好麻烦</li>
+<li>今天，用一个简单粗暴的功能，帮你一键导入MySQL的数据，无需人肉建表</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据导入"><a href="#数据导入" class="headerlink" title="数据导入"></a>数据导入</h2><h3 id="第一组"><a href="#第一组" class="headerlink" title="第一组"></a>第一组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"># du出的表大小</div><div class="line">5.5G    article_clientuser_sum.ibd</div><div class="line"></div><div class="line"># ClickHouse操作语句</div><div class="line">CREATE TABLE article_clientuser_sum</div><div class="line">ENGINE = MergeTree</div><div class="line">ORDER BY id AS</div><div class="line">SELECT *</div><div class="line">FROM mysql(&apos;host:port&apos;, &apos;db&apos;, &apos;article_clientuser_sum&apos;, &apos;user&apos;, &apos;password&apos;) </div><div class="line"></div><div class="line"># 耗时和平均速度</div><div class="line">0 rows in set. Elapsed: 137.251 sec. Processed 18.59 million rows, 7.34 GB (135.43 thousand rows/s., 53.48 MB/s.)</div></pre></td></tr></table></figure>
+<hr>
+<a id="more"></a>
+<h3 id="第二组"><a href="#第二组" class="headerlink" title="第二组"></a>第二组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"># 另一个表</div><div class="line">20G     xx_httpcode_minf.ibd</div><div class="line"></div><div class="line">CREATE TABLE xx_httpcode_minf</div><div class="line">ENGINE = MergeTree</div><div class="line">ORDER BY id AS</div><div class="line">SELECT *</div><div class="line">FROM mysql(&apos;host:port&apos;, &apos;db&apos;, &apos;tb&apos;, &apos;user&apos;, &apos;password&apos;) </div><div class="line"></div><div class="line"># 不知道为啥这表这么快就导入了 貌似是行少，但是表的总大小大啊</div><div class="line">0 rows in set. Elapsed: 44.389 sec. Processed 13.03 million rows, 1.44 GB (293.44 thousand rows/s., 32.35 MB/s.)</div></pre></td></tr></table></figure>
+<hr>
+<h2 id="PK之count"><a href="#PK之count" class="headerlink" title="PK之count(*)"></a>PK之count(*)</h2><h3 id="第一组-1"><a href="#第一组-1" class="headerlink" title="第一组"></a>第一组</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"># 1800w</div><div class="line"></div><div class="line"># ClickHouse</div><div class="line">SELECT count(*)</div><div class="line">FROM article_clientuser_sum</div><div class="line">┌──count()─┐</div><div class="line">│ 18587381 │</div><div class="line">└──────────┘</div><div class="line"></div><div class="line">1 rows in set. Elapsed: 0.033 sec. Processed 18.59 million rows, 74.35 MB (556.76 million rows/s., 2.23 GB/s.)</div><div class="line"></div><div class="line"></div><div class="line"># MySQL</div><div class="line">mysql&gt; select count(*) from article_clientuser_sum ;</div><div class="line">+----------+</div><div class="line">| count(*) |</div><div class="line">+----------+</div><div class="line">| 18587381 |</div><div class="line">+----------+</div><div class="line">1 row in set (39.48 sec)</div><div class="line"></div><div class="line"># 性能 1196X</div></pre></td></tr></table></figure>
+<hr>
+<h3 id="第二组-1"><a href="#第二组-1" class="headerlink" title="第二组"></a>第二组</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"># 1300w</div><div class="line"></div><div class="line"># ClickHouse</div><div class="line">SELECT count(*)</div><div class="line">FROM xx_httpcode_minf</div><div class="line">┌──count()─┐</div><div class="line">│ 13025469 │</div><div class="line">└──────────┘</div><div class="line">1 rows in set. Elapsed: 0.032 sec. Processed 13.03 million rows, 52.10 MB (406.68 million rows/s., 1.63 GB/s.)</div><div class="line"></div><div class="line"># MySQL</div><div class="line">mysql&gt; SELECT count(*)</div><div class="line">    -&gt; FROM xx_httpcode_minf;</div><div class="line">+----------+</div><div class="line">| count(*) |</div><div class="line">+----------+</div><div class="line">| 13025469 |</div><div class="line">+----------+</div><div class="line">1 row in set (1 min 46.87 sec)</div><div class="line"></div><div class="line"># 性能 3340X</div></pre></td></tr></table></figure>
+<h2 id="PK之复杂查询"><a href="#PK之复杂查询" class="headerlink" title="PK之复杂查询"></a>PK之复杂查询</h2><h3 id="第一组-2"><a href="#第一组-2" class="headerlink" title="第一组"></a>第一组</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"># ClickHouse</div><div class="line"></div><div class="line">SELECT SUM(size) AS size</div><div class="line">FROM xx_network_flow</div><div class="line">WHERE (date &gt;= '2018-01-01') AND (date &lt;= '2018-01-31') AND (netstat = 0) AND (project LIKE '保密%')</div><div class="line"></div><div class="line">Row 1:</div><div class="line">──────</div><div class="line">size: 4132888693</div><div class="line"></div><div class="line">1 rows in set. Elapsed: 0.039 sec. Processed 841.66 thousand rows, 9.46 MB (21.67 million rows/s., 243.70 MB/s.)</div><div class="line"></div><div class="line"></div><div class="line"># MySQL</div><div class="line">+------------+</div><div class="line">| size       |</div><div class="line">+------------+</div><div class="line">| 4132888693 |</div><div class="line">+------------+</div><div class="line">1 row in set (2.34 sec)</div><div class="line"></div><div class="line"># 性能 60X</div></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>SQL太长，截图示例</li>
+<li>SQL里的xxx均为脱敏数据<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15177074537021.jpg" alt=""></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"># ClickHouse</div><div class="line">┌─────size─┐</div><div class="line">│ 76888224 │</div><div class="line">└──────────┘</div><div class="line"></div><div class="line">1 rows in set. Elapsed: 0.137 sec. Processed 841.66 thousand rows, 9.46 MB (6.13 million rows/s., 68.97 MB/s.)</div><div class="line"></div><div class="line"></div><div class="line"># MySQL</div><div class="line">+----------+</div><div class="line">| size     |</div><div class="line">+----------+</div><div class="line">| 76888224 |</div><div class="line">+----------+</div><div class="line">1 row in set (2.86 sec)</div><div class="line"></div><div class="line"># 性能 21X</div></pre></td></tr></table></figure>
+<h3 id="第二组-2"><a href="#第二组-2" class="headerlink" title="第二组"></a>第二组</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"># ClickHouse</div><div class="line">SELECT</div><div class="line">    project,</div><div class="line">    idc,</div><div class="line">    minf,</div><div class="line">    http_code,</div><div class="line">    sum(sumhit) AS num</div><div class="line">FROM xx_httpcode_minf</div><div class="line">WHERE (date = '2018-01-16') AND (httptype = 'download') AND \</div><div class="line">(minf &gt;= 0) AND (minf &lt;= 288) AND \</div><div class="line">(http_code IN ('200', '500', '404', '502', '503', '504'))</div><div class="line">GROUP BY</div><div class="line">    project,</div><div class="line">    idc,</div><div class="line">    minf,</div><div class="line">    http_code</div><div class="line">ORDER BY num DESC</div><div class="line">LIMIT 3</div><div class="line"></div><div class="line">┌─project─────────────────────────────────────┬─idc────┬─minf─┬─http_code─┬────num─┐</div><div class="line">│ 域名1xxxx │ .1xx │  195 │ 200       │ 247522 │</div><div class="line">│ 域名2xxxx │ .2xx │  185 │ 200       │ 246613 │</div><div class="line">│ 域名3xxxx │ .3xx │  188 │ 200       │ 245808 │</div><div class="line">└─────────────────────────────────────────────┴────────┴──────┴───────────┴────────┘</div><div class="line"></div><div class="line">3 rows in set. Elapsed: 0.161 sec. Processed 13.03 million rows, 284.63 MB (80.94 million rows/s., 1.77 GB/s.)</div><div class="line"></div><div class="line"># MySQL</div><div class="line">+---------------------------------------------+--------+------+-----------+--------+</div><div class="line">| project                                     | idc    | minf | http_code | num    |</div><div class="line">+---------------------------------------------+--------+------+-----------+--------+</div><div class="line">| 域名1xxxx| .1.xx |  195 | 200       | 247522 |</div><div class="line">|  域名2xxxx | .2.xxx |  185 | 200       | 246613 |</div><div class="line">|  域名3xxxx | .3xx |  188 | 200       | 245808 |</div><div class="line">+---------------------------------------------+--------+------+-----------+--------+</div><div class="line">3 rows in set (12.02 sec)</div><div class="line"></div><div class="line"># 性能 75X</div></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>SQL太长，截图示例</li>
+<li>SQL里的xxx均为脱敏数据<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15177075572871.jpg" alt=""></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"># ClickHouse</div><div class="line"></div><div class="line">┌─project────────────────────────────┬─idc────┬─minf─┬─http_code─┬───num─┐</div><div class="line">│  域名1 │ 1xxx│  154 │ 404       │ 10792 │</div><div class="line">│  域名1 │ 2xxx │  155 │ 404       │ 10395 │</div><div class="line">│ 域名1│ 3xxx │  272 │ 404       │ 10313 │</div><div class="line">└────────────────────────────────────┴────────┴──────┴───────────┴───────┘</div><div class="line"></div><div class="line">3 rows in set. Elapsed: 0.119 sec. Processed 13.03 million rows, 283.15 MB (109.10 million rows/s., 2.37 GB/s.)</div><div class="line"></div><div class="line"></div><div class="line"># MySQL</div><div class="line">+------------------------------------+--------+------+-----------+-------+</div><div class="line">| project                            | idc    | minf | http_code | num   |</div><div class="line">+------------------------------------+--------+------+-----------+-------+</div><div class="line">|  域名1 | .1zz |  154 | 404       | 10792 |</div><div class="line">|  域名1 | .3xx |  155 | 404       | 10395 |</div><div class="line">|  域名1 | .3rr |  272 | 404       | 10313 |</div><div class="line">+------------------------------------+--------+------+-----------+-------+</div><div class="line">3 rows in set (2.19 sec)</div><div class="line"></div><div class="line"># 性能 18X</div></pre></td></tr></table></figure>
+<h2 id="压缩对比"><a href="#压缩对比" class="headerlink" title="压缩对比"></a>压缩对比</h2><table>
+<thead>
+<tr>
+<th style="text-align:center">表名</th>
+<th style="text-align:center">MySQL表容量</th>
+<th style="text-align:center">ClickHouse表容量</th>
+<th style="text-align:center">压缩倍数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">article_clientuser_sum</td>
+<td style="text-align:center">5.5GB</td>
+<td style="text-align:center">1.2G</td>
+<td style="text-align:center">4.6</td>
+</tr>
+<tr>
+<td style="text-align:center">xx_httpcode_minf</td>
+<td style="text-align:center">20GB</td>
+<td style="text-align:center">243M</td>
+<td style="text-align:center">84</td>
+</tr>
+<tr>
+<td style="text-align:center">xx_network_flow</td>
+<td style="text-align:center">189MB</td>
+<td style="text-align:center">25M</td>
+<td style="text-align:center">7.56</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>注</strong>：xx_httpcode_minf这个表的MySQL文件20个G，应该是有大量的空洞造成的，这也就是Facebook的人开发MyRocks的原因：减少空洞，节省磁盘</li>
+</ul>
+<h2 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h2><ul>
+<li>目前该功能还处于初级阶段，有不完善的地方，比如数据导入的方式比较粗暴，中间如果有异常，需要重新执行（使用的ClickHouse版本为：1.1.54342），据开发者描述，后续会支持直接在ClickHouse里对第三方数据源进行查询操作，无需建表、导入</li>
+<li>MySQL的参数需要修改，如max_allowed_packet</li>
+<li>数据导入时需要注意带宽，实测可以达到50MB/S</li>
+<li>如果MySQL里的字段有decimal字符类型会怎么样？ClickHouse没有双精度的类型</li>
+<li>部分SQL需要改写<ul>
+<li>如双引号改单引号</li>
+</ul>
+</li>
+</ul>
+<h2 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h2><ul>
+<li><p>ClickHouse为啥快？</p>
+<ol>
+<li>MySQL单条SQL是单线程的，只能跑满一个core，ClickHouse相反，有多少CPU，吃多少资源，所以飞快</li>
+<li>ClickHouse不支持事务，不存在隔离级别。这里要额外说一下， 有人觉得，你一个数据库都不支持事务，不支持ACID还玩个毛。ClickHouse的定位是分析性数据库，而不是严格的关系型数据库。又有人要问了，数据都不一致，统计个毛。举个例子，汽车的油表是100%准确么？为了获得一个100%准确的值，难道每次测量你都要停车检查么？统计数据的意义在于用大量的数据看规律，看趋势，而不是100%准确。</li>
+<li>IO方面，MySQL是行存储，ClickHouse是列存储，后者在count()这类操作天然有优势，同时，在IO方面，MySQL需要大量随机IO，ClickHouse基本是顺序IO。</li>
+<li>有人可能觉得上面的数据导入的时候，数据肯定缓存在内存里了，这个的确，但是ClickHouse基本上是顺序IO，用过就知道了，对IO基本没有太高要求，当然，磁盘越快，上层处理越快，但是99%的情况是，CPU先跑满了（数据库里太少见了，大多数都是IO不够用）。</li>
+</ol>
+</li>
+<li><p>说到MySQL上跑的各种复杂查询，那是相当痛苦的回忆。从索引层面，很难对这些SQL进行优化，这也是我从MySQL DBA转做数据分析后要解决的第一个问题</p>
+</li>
+<li>专业的事情让专业的数据库来做，放开MySQL吧~</li>
+<li>太™快了，还不赶紧来试试</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a href="https://qiita.com/mikage/items/fba19b3b8697fc6f73f0" target="_blank" rel="external">MySQLのデータをClickHouseで高速に集計する</a></li>
+</ul>
+<h2 id="广告"><a href="#广告" class="headerlink" title="广告"></a>广告</h2><ul>
+<li>提供专业的ClickHouse商业资讯、案例分析和课程培训，详情见微信（扫码请备注公司-姓名）：<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/微信扫码.png" alt="微信扫码"></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+            <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
+          
+            <a href="/tags/Data-Analysis/" rel="tag"># Data Analysis</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/28/ClickHouse-Beijing-Meetup-PPT/" rel="next" title="ClickHouse Beijing Meetup--数据分析领域的黑马-ClickHouse">
+                <i class="fa fa-chevron-left"></i> ClickHouse Beijing Meetup--数据分析领域的黑马-ClickHouse
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2018/02/04/ClickHouse-Use-MySQL-Data/"
+           data-title="使用ClickHouse一键接管MySQL数据分析" data-url="http://jackpgao.github.io/2018/02/04/ClickHouse-Use-MySQL-Data/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Jack Gao" />
+          <p class="site-author-name" itemprop="name">Jack Gao</p>
+           
+              <p class="site-description motion-element" itemprop="description">Done is better than perfect!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/jackpgao/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据导入"><span class="nav-number">1.</span> <span class="nav-text">数据导入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一组"><span class="nav-number">1.1.</span> <span class="nav-text">第一组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二组"><span class="nav-number">1.2.</span> <span class="nav-text">第二组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PK之count"><span class="nav-number">2.</span> <span class="nav-text">PK之count(*)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一组-1"><span class="nav-number">2.1.</span> <span class="nav-text">第一组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二组-1"><span class="nav-number">2.2.</span> <span class="nav-text">第二组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PK之复杂查询"><span class="nav-number">3.</span> <span class="nav-text">PK之复杂查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一组-2"><span class="nav-number">3.1.</span> <span class="nav-text">第一组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二组-2"><span class="nav-number">3.2.</span> <span class="nav-text">第二组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#压缩对比"><span class="nav-number">4.</span> <span class="nav-text">压缩对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#风险"><span class="nav-number">5.</span> <span class="nav-text">风险</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#讨论"><span class="nav-number">6.</span> <span class="nav-text">讨论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#广告"><span class="nav-number">8.</span> <span class="nav-text">广告</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Gao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"JackpGao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+</body>
+</html>
