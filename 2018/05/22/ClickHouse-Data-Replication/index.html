@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="ClickHouse,文件SQL," />
+  <meta name="keywords" content="ClickHouse,复制,Replication," />
 
 
 
@@ -87,18 +87,58 @@
 
 
 
-<meta name="description" content="今天的主题，不用写序言，看上图就懂">
+<meta name="description" content="ClickHouse提供了非常高级的基于ZK的表复制方式，同时也提供了基于Cluster的复制方式
+二者非常容易搞混
+特写此PPT来说明">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ClickHouse奇技淫巧系列之SQL查文件">
-<meta property="og:url" content="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/index.html">
+<meta property="og:title" content="ClickHouse的数据复制">
+<meta property="og:url" content="http://jackpgao.github.io/2018/05/22/ClickHouse-Data-Replication/index.html">
 <meta property="og:site_name" content="Jack Gao's Blog">
-<meta property="og:description" content="今天的主题，不用写序言，看上图就懂">
-<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/没有什么是1个SQL解决不了的.jpg">
-<meta property="og:updated_time" content="2017-12-22T07:04:21.000Z">
+<meta property="og:description" content="ClickHouse提供了非常高级的基于ZK的表复制方式，同时也提供了基于Cluster的复制方式
+二者非常容易搞混
+特写此PPT来说明">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15269965334769.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.001.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.002.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.003.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.004.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.005.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.006.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.007.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.008.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.009.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.010.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.011.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.012.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.013.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.014.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.015.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.016.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.017.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.018.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.019.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.020.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.021.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.022.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.023.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.024.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.025.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.026.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.027.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.028.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.029.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.030.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.031.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.032.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.033.jpeg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.034.jpeg">
+<meta property="og:updated_time" content="2018-05-22T13:43:19.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ClickHouse奇技淫巧系列之SQL查文件">
-<meta name="twitter:description" content="今天的主题，不用写序言，看上图就懂">
-<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/没有什么是1个SQL解决不了的.jpg">
+<meta name="twitter:title" content="ClickHouse的数据复制">
+<meta name="twitter:description" content="ClickHouse提供了非常高级的基于ZK的表复制方式，同时也提供了基于Cluster的复制方式
+二者非常容易搞混
+特写此PPT来说明">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15269965334769.png">
 
 
 
@@ -126,13 +166,13 @@
 
 
 
-  <link rel="canonical" href="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/"/>
+  <link rel="canonical" href="http://jackpgao.github.io/2018/05/22/ClickHouse-Data-Replication/"/>
 
 
 
 
 
-  <title> ClickHouse奇技淫巧系列之SQL查文件 | Jack Gao's Blog </title>
+  <title> ClickHouse的数据复制 | Jack Gao's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -309,7 +349,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2018/05/22/ClickHouse-Data-Replication/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jack Gao">
@@ -330,7 +370,7 @@
             
             
               
-                ClickHouse奇技淫巧系列之SQL查文件
+                ClickHouse的数据复制
               
             
           </h1>
@@ -345,8 +385,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-22T15:03:32+08:00">
-                2017-12-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-22T21:37:33+08:00">
+                2018-05-22
               </time>
             
 
@@ -386,8 +426,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/12/22/Using-SQL-with-File-by-ClickHouse/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/22/Using-SQL-with-File-by-ClickHouse/" itemprop="commentCount"></span>
+                <a href="/2018/05/22/ClickHouse-Data-Replication/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/05/22/ClickHouse-Data-Replication/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -413,49 +453,15 @@
       
 
       
-        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/没有什么是1个SQL解决不了的.jpg" alt="没有什么是1个SQL解决不了的"></p>
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15269965334769.png" alt=""></p>
 <blockquote>
-<p>今天的主题，不用写序言，看上图就懂</p>
+<p>ClickHouse提供了非常高级的基于ZK的表复制方式，同时也提供了基于Cluster的复制方式</p>
+<p>二者非常容易搞混</p>
+<p>特写此PPT来说明</p>
 </blockquote>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.001.jpeg" alt="ClickHouse复制简单说明.001"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.002.jpeg" alt="ClickHouse复制简单说明.002"></p>
 <a id="more"></a>
-<h2 id="如何用SQL的方式操作一个文件"><a href="#如何用SQL的方式操作一个文件" class="headerlink" title="如何用SQL的方式操作一个文件"></a>如何用SQL的方式操作一个文件</h2><h3 id="先举例"><a href="#先举例" class="headerlink" title="先举例"></a>先举例</h3><ul>
-<li>想知道history命令里，敲得最多的是哪个？</li>
-<li>当然，sed，awk完全可以做到，但是，如果用SQL怎么做？</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">history | awk '&#123;print $1"\t"$2&#125;' | clickhouse-client \</div><div class="line">--query="SELECT shell, count() AS c FROM history \</div><div class="line">GROUP BY shell ORDER BY c DESC limit 10 " \</div><div class="line">--external --file=- --name=history \</div><div class="line">--structure='id UInt16, shell String'  -h  127.0.0.1  </div><div class="line">ls      390</div><div class="line">cd      243</div><div class="line">clickhouse-client       173</div><div class="line">du      67</div><div class="line">vim     57</div><div class="line">htop    42</div><div class="line">cat     28</div><div class="line">history 27</div><div class="line">tailf   25</div><div class="line">mysql   24</div></pre></td></tr></table></figure>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><ul>
-<li>ClickHouse支持把一个外部文件，加载到内部的一个临时表中，对这个临时表进行SQL化操作</li>
-</ul>
-<h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">--external --file=... [--name=...] [--format=...] [--types=...|--structure=...]</div></pre></td></tr></table></figure>
-<ul>
-<li><code>--external</code> 表示这个操作是外部文件的</li>
-<li><code>--file=...</code> 指定一个文件，如果是标准输入，则写<code>-</code></li>
-<li><code>[--name=...]</code> 表名，如果忽略，默认给<code>_data</code></li>
-<li><code>[--format=...]</code> 列分隔符，默认是<code>TabSeparated</code></li>
-<li>`[–types=…|–structure=…] 这句不解释了，看上面的例子就好了</li>
-</ul>
-<h3 id="再来一个测试"><a href="#再来一个测试" class="headerlink" title="再来一个测试"></a>再来一个测试</h3><ul>
-<li>为了模拟一个有意义的场景，我们选了ClickHouse的system.parts这个表，里面记录的是ClickHouse的分区信息，表结构如下</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">partition:                             201709</div><div class="line">name:                                  20170903_20170905_2_2963928_22</div><div class="line">replicated:                            0</div><div class="line">active:                                1</div><div class="line">marks:                                 23372</div><div class="line">rows:                                  191456971</div><div class="line">bytes:                                 93294984484</div><div class="line">modification_time:                     2017-09-05 23:37:33</div><div class="line">remove_time:                           0000-00-00 00:00:00</div><div class="line">refcount:                              2</div><div class="line">min_date:                              2017-09-03</div><div class="line">max_date:                              2017-09-05</div><div class="line">min_block_number:                      2</div><div class="line">max_block_number:                      2963928</div><div class="line">level:                                 22</div><div class="line">primary_key_bytes_in_memory:           93488</div><div class="line">primary_key_bytes_in_memory_allocated: 196608</div><div class="line">database:                              xx</div><div class="line">table:                                 xx</div><div class="line">engine:                                MergeTree</div></pre></td></tr></table></figure>
-<ul>
-<li>我们导出一份数据，作为测试文件</li>
-<li>默认导出的文件是tab分割</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">clickhouse-client -h  127.0.0.1 -m -d system -q &quot;select * from parts &quot; &gt; test.sql</div></pre></td></tr></table></figure>
-<ul>
-<li>目标SQL</li>
-<li>找某个表的分区数据，即有几个分区，分区文件多大</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">SELECT </div><div class="line">    partition, </div><div class="line">    count() AS number_of_parts, </div><div class="line">    formatReadableSize(sum(bytes)) AS sum_size</div><div class="line">FROM system.parts </div><div class="line">WHERE active AND (database = &apos;xxxx&apos;) AND (table = &apos;xxxx_msg&apos;)</div><div class="line">GROUP BY partition</div><div class="line">ORDER BY partition ASC</div></pre></td></tr></table></figure>
-<ul>
-<li>文件SQL</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">root@10.xxxx:/root  # wc -l test.sql </div><div class="line">11991 test.sql</div><div class="line">root@10.xxxx:/root  # clickhouse-client \</div><div class="line">--query=&quot;SELECT partition,  count() AS number_of_parts, \</div><div class="line">formatReadableSize(sum(bytes)) AS sum_size FROM parts  \</div><div class="line">WHERE active AND (database = &apos;xxxx&apos;) AND (table = &apos;xxxx_msg&apos;) \</div><div class="line">GROUP BY partition ORDER BY partition ASC ;&quot; \</div><div class="line">--external --file=test.sql --name=parts \</div><div class="line">--structure=&apos;partition UInt16,name String,replicated UInt16,active UInt16,marks UInt16,rows UInt16,bytes UInt16,modification_time String,remove_time String,refcount UInt16,min_date String,max_date String,min_block_number UInt16,max_block_number UInt16,level UInt16,primary_key_bytes_in_memory UInt16,primary_key_bytes_in_memory_allocated UInt16,database String,table String,engine String&apos;  \</div><div class="line">-h  127.0.0.1  </div><div class="line">201709  36      1.68 TiB</div><div class="line">201710  26      1.42 TiB</div><div class="line">201711  30      1.42 TiB</div><div class="line">201712  31      963.07 GiB</div></pre></td></tr></table></figure>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
-<li>文件操作虽然方便，但是官方文档也提到了，如果是特别大的文件，还是不要这么玩了</li>
-<li>另外，这个文件SQL其实还是要依赖ClickHouse-Server的，如果你没有启动Server，玩不了的哦~</li>
-</ul>
+<p><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.003.jpeg" alt="ClickHouse复制简单说明.003"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.004.jpeg" alt="ClickHouse复制简单说明.004"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.005.jpeg" alt="ClickHouse复制简单说明.005"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.006.jpeg" alt="ClickHouse复制简单说明.006"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.007.jpeg" alt="ClickHouse复制简单说明.007"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.008.jpeg" alt="ClickHouse复制简单说明.008"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.009.jpeg" alt="ClickHouse复制简单说明.009"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.010.jpeg" alt="ClickHouse复制简单说明.010"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.011.jpeg" alt="ClickHouse复制简单说明.011"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.012.jpeg" alt="ClickHouse复制简单说明.012"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.013.jpeg" alt="ClickHouse复制简单说明.013"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.014.jpeg" alt="ClickHouse复制简单说明.014"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.015.jpeg" alt="ClickHouse复制简单说明.015"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.016.jpeg" alt="ClickHouse复制简单说明.016"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.017.jpeg" alt="ClickHouse复制简单说明.017"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.018.jpeg" alt="ClickHouse复制简单说明.018"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.019.jpeg" alt="ClickHouse复制简单说明.019"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.020.jpeg" alt="ClickHouse复制简单说明.020"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.021.jpeg" alt="ClickHouse复制简单说明.021"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.022.jpeg" alt="ClickHouse复制简单说明.022"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.023.jpeg" alt="ClickHouse复制简单说明.023"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.024.jpeg" alt="ClickHouse复制简单说明.024"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.025.jpeg" alt="ClickHouse复制简单说明.025"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.026.jpeg" alt="ClickHouse复制简单说明.026"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.027.jpeg" alt="ClickHouse复制简单说明.027"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.028.jpeg" alt="ClickHouse复制简单说明.028"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.029.jpeg" alt="ClickHouse复制简单说明.029"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.030.jpeg" alt="ClickHouse复制简单说明.030"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.031.jpeg" alt="ClickHouse复制简单说明.031"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.032.jpeg" alt="ClickHouse复制简单说明.032"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.033.jpeg" alt="ClickHouse复制简单说明.033"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/ClickHouse复制简单说明.034.jpeg" alt="ClickHouse复制简单说明.034"></p>
 
       
     </div>
@@ -481,7 +487,9 @@
           
             <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
           
-            <a href="/tags/文件SQL/" rel="tag"># 文件SQL</a>
+            <a href="/tags/复制/" rel="tag"># 复制</a>
+          
+            <a href="/tags/Replication/" rel="tag"># Replication</a>
           
         </div>
       
@@ -494,8 +502,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/12/19/Using-ClickHouse-like-MySQL-by-ProxySQL/" rel="next" title="Using ClickHouse like MySQL by ProxySQL">
-                <i class="fa fa-chevron-left"></i> Using ClickHouse like MySQL by ProxySQL
+              <a href="/2018/03/13/APM-Apdex/" rel="next" title="如何更好的衡量IT服务质量？">
+                <i class="fa fa-chevron-left"></i> 如何更好的衡量IT服务质量？
               </a>
             
           </div>
@@ -503,10 +511,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/27/ClickHouse-with-Hangout/" rel="prev" title="Hangout with ClickHouse【转载】">
-                Hangout with ClickHouse【转载】 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -535,8 +539,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/12/22/Using-SQL-with-File-by-ClickHouse/"
-           data-title="ClickHouse奇技淫巧系列之SQL查文件" data-url="http://jackpgao.github.io/2017/12/22/Using-SQL-with-File-by-ClickHouse/">
+      <div class="ds-thread" data-thread-key="2018/05/22/ClickHouse-Data-Replication/"
+           data-title="ClickHouse的数据复制" data-url="http://jackpgao.github.io/2018/05/22/ClickHouse-Data-Replication/">
       </div>
     
   </div>
@@ -560,17 +564,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpg"
@@ -639,22 +634,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何用SQL的方式操作一个文件"><span class="nav-number">1.</span> <span class="nav-text">如何用SQL的方式操作一个文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先举例"><span class="nav-number">1.1.</span> <span class="nav-text">先举例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">1.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#格式"><span class="nav-number">1.3.</span> <span class="nav-text">格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再来一个测试"><span class="nav-number">1.4.</span> <span class="nav-text">再来一个测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意事项"><span class="nav-number">2.</span> <span class="nav-text">注意事项</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
