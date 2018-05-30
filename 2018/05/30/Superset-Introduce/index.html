@@ -116,7 +116,7 @@ PS，Airbnb在数据方面做的很棒，相关的博客B格也很高，他们�
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/68747470733a2f2f6672616e63686973652e636c6f75642f696d616765732f6c616e64696e672d6769662e676966.gif">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15276946776870.gif">
 <meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15276945921636.jpg">
-<meta property="og:updated_time" content="2018-05-30T15:45:51.000Z">
+<meta property="og:updated_time" content="2018-05-30T15:57:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="可能是目前颜值最高的开源BI工具-Superset">
 <meta name="twitter:description" content="没有声音，再好的戏也出不来同样，没有可视化，再好的数据分析也不完美
@@ -451,8 +451,10 @@ PS，Airbnb在数据方面做的很棒，相关的博客B格也很高，他们�
 </li>
 </ul>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">mkdir /data1/superset </div><div class="line"><span class="built_in">cd</span> /data1/superset </div><div class="line"></div><div class="line"> git <span class="built_in">clone</span> https://github.com/amancevice/superset.git </div><div class="line"></div><div class="line"> <span class="built_in">cd</span> /data1/superset/superset/examples/sqlite </div><div class="line"> mkdir superset</div><div class="line"> <span class="comment"># 这个是SQLLite的数据文件，映射到Docker内部</span></div><div class="line"> touch superset/superset.db</div><div class="line"></div><div class="line"> <span class="comment"># 这一步必须要做，否则Docker可能没有读写权限</span></div><div class="line"> chmod 777 superset/superset.db</div><div class="line"> </div><div class="line"> <span class="comment"># 启动Redis</span></div><div class="line"> docker-compose up <span class="_">-d</span> redis</div><div class="line"> <span class="comment"># 启动Superset</span></div><div class="line"> docker-compose up <span class="_">-d</span> superset</div><div class="line"> <span class="comment"># Superset本身启动需要几十秒，需要观察下才能执行下一步</span></div><div class="line"> docker-compose ps   </div><div class="line"> <span class="comment"># 进行初始化，根据提示设置用户名密码</span></div><div class="line"> docker-compose <span class="built_in">exec</span> superset superset-demo</div></pre></td></tr></table></figure>
-<pre><code>- 我们考虑到元数据的安全性，就使用了自己的MySQL和Redis服务，基本思路就是使用docker-compose跑起来后，把相关的表结构dump到我们线上，再修改Superset的配置指向
-</code></pre><h2 id="问题与坑"><a href="#问题与坑" class="headerlink" title="问题与坑"></a>问题与坑</h2><h3 id="中文的支持"><a href="#中文的支持" class="headerlink" title="中文的支持"></a>中文的支持</h3><ul>
+<ul>
+<li>我们考虑到元数据的安全性，就使用了自己的MySQL和Redis服务，基本思路就是使用docker-compose跑起来后，把相关的表结构dump到我们线上，再修改Superset的配置指向</li>
+</ul>
+<h2 id="问题与坑"><a href="#问题与坑" class="headerlink" title="问题与坑"></a>问题与坑</h2><h3 id="中文的支持"><a href="#中文的支持" class="headerlink" title="中文的支持"></a>中文的支持</h3><ul>
 <li><p>如果你想采用MySQL作为Superset的元数据，请务必修改所MySQL表结构里的charcter，默认是latin1，连中文的Dashboard名字都不支持</p>
 <ul>
 <li>多说一句，直接alter table modify是不可以的，需要把数据dump出来，sed修改一下，再灌入『资深DBA友情提醒』</li>
