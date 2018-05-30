@@ -1,0 +1,986 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="没有声音，再好的戏也出不来同样，没有可视化，再好的数据分析也不完美
+数据可视化是大数据的『最后一公里』 
+
+简介
+Superset的Airbnb开源的数据可视化工具，目前属于Apache孵化器项目，主要用于数据分析师进行数据可视化工作
+PS，Airbnb在数据方面做的很棒，相关的博客B格也很高，他们的博客名字居然叫『Airbnb Engineering &amp;amp; Data Science』，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可能是目前颜值最高的开源BI工具-Superset">
+<meta property="og:url" content="http://jackpgao.github.io/2018/05/30/Superset-Introduce/index.html">
+<meta property="og:site_name" content="Jack Gao's Blog">
+<meta property="og:description" content="没有声音，再好的戏也出不来同样，没有可视化，再好的数据分析也不完美
+数据可视化是大数据的『最后一公里』 
+
+简介
+Superset的Airbnb开源的数据可视化工具，目前属于Apache孵化器项目，主要用于数据分析师进行数据可视化工作
+PS，Airbnb在数据方面做的很棒，相关的博客B格也很高，他们的博客名字居然叫『Airbnb Engineering &amp;amp; Data Science』，">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15206092406213.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15206084302723.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/111.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/2222.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15207433283142.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15207433215659.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15206089541379.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15276947139850.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15276949314053.png">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15276947004641.jpg">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/68747470733a2f2f6672616e63686973652e636c6f75642f696d616765732f6c616e64696e672d6769662e676966.gif">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15276946776870.gif">
+<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15276945921636.jpg">
+<meta property="og:updated_time" content="2018-05-30T15:45:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="可能是目前颜值最高的开源BI工具-Superset">
+<meta name="twitter:description" content="没有声音，再好的戏也出不来同样，没有可视化，再好的数据分析也不完美
+数据可视化是大数据的『最后一公里』 
+
+简介
+Superset的Airbnb开源的数据可视化工具，目前属于Apache孵化器项目，主要用于数据分析师进行数据可视化工作
+PS，Airbnb在数据方面做的很棒，相关的博客B格也很高，他们的博客名字居然叫『Airbnb Engineering &amp;amp; Data Science』，">
+<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/15206092406213.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'YZ27AIO4SX',
+      apiKey: '9b9cf00eff4aac0ae53f6891931c3b5a',
+      indexName: 'jackpgao.github.io',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackpgao.github.io/2018/05/30/Superset-Introduce/"/>
+
+
+
+
+
+  <title> 可能是目前颜值最高的开源BI工具-Superset | Jack Gao's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack Gao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">All great achievements require time.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2018/05/30/Superset-Introduce/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Gao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack Gao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                可能是目前颜值最高的开源BI工具-Superset
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-30T23:43:48+08:00">
+                2018-05-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/30/Superset-Introduce/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/05/30/Superset-Introduce/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/15206092406213.jpg" alt=""></p>
+<blockquote>
+<p>没有声音，再好的戏也出不来<br>同样，没有可视化，再好的数据分析也不完美</p>
+<p>数据可视化是大数据的『<strong>最后一公里</strong>』 </p>
+</blockquote>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><ul>
+<li>Superset的Airbnb开源的数据可视化工具，目前属于Apache孵化器项目，主要用于数据分析师进行数据可视化工作<ul>
+<li>PS，Airbnb在数据方面做的很棒，相关的<a href="https://medium.com/airbnb-engineering" target="_blank" rel="external">博客</a>B格也很高，他们的博客名字居然叫『Airbnb Engineering &amp; Data Science』，可见对于数据科学的重视</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li>在github上搜索数据可视化，Superset的star数已经远远超过其他可视化工具，文章的最后，我们也会对调研过的可视化工具进行若干对比<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15206084302723.jpg" alt=""></li>
+</ul>
+<h4 id="目前支持的图表类型"><a href="#目前支持的图表类型" class="headerlink" title="目前支持的图表类型"></a>目前支持的图表类型</h4><p><img src="http://7xs54v.com1.z0.glb.clouddn.com/111.png" alt="111"><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/2222.png" alt="2222"></p>
+<h2 id="如何搭建"><a href="#如何搭建" class="headerlink" title="如何搭建"></a>如何搭建</h2><ul>
+<li>官方项目地址<ul>
+<li><a href="https://github.com/apache/incubator-superset" target="_blank" rel="external">https://github.com/apache/incubator-superset</a></li>
+<li>不推荐直接在服务器上安装，因为依赖的包很多，一方面可能少装，其次是把环境搞乱了，很难维护后续</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>第三方Docker项目<ul>
+<li><a href="https://github.com/amancevice/superset" target="_blank" rel="external">https://github.com/amancevice/superset</a></li>
+<li>推荐，使用docker-compose安装，支持SQLLite/PG/MySQL方式的元数据存储</li>
+<li>整个Docker包括3部分：1. 元数据 2. Redis缓存 3. Superset本身</li>
+<li>以SQLLite为例，简单的安装方式如下：</li>
+</ul>
+</li>
+</ul>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">mkdir /data1/superset </div><div class="line"><span class="built_in">cd</span> /data1/superset </div><div class="line"></div><div class="line"> git <span class="built_in">clone</span> https://github.com/amancevice/superset.git </div><div class="line"></div><div class="line"> <span class="built_in">cd</span> /data1/superset/superset/examples/sqlite </div><div class="line"> mkdir superset</div><div class="line"> <span class="comment"># 这个是SQLLite的数据文件，映射到Docker内部</span></div><div class="line"> touch superset/superset.db</div><div class="line"></div><div class="line"> <span class="comment"># 这一步必须要做，否则Docker可能没有读写权限</span></div><div class="line"> chmod 777 superset/superset.db</div><div class="line"> </div><div class="line"> <span class="comment"># 启动Redis</span></div><div class="line"> docker-compose up <span class="_">-d</span> redis</div><div class="line"> <span class="comment"># 启动Superset</span></div><div class="line"> docker-compose up <span class="_">-d</span> superset</div><div class="line"> <span class="comment"># Superset本身启动需要几十秒，需要观察下才能执行下一步</span></div><div class="line"> docker-compose ps   </div><div class="line"> <span class="comment"># 进行初始化，根据提示设置用户名密码</span></div><div class="line"> docker-compose <span class="built_in">exec</span> superset superset-demo</div></pre></td></tr></table></figure>
+<pre><code>- 我们考虑到元数据的安全性，就使用了自己的MySQL和Redis服务，基本思路就是使用docker-compose跑起来后，把相关的表结构dump到我们线上，再修改Superset的配置指向
+</code></pre><h2 id="问题与坑"><a href="#问题与坑" class="headerlink" title="问题与坑"></a>问题与坑</h2><h3 id="中文的支持"><a href="#中文的支持" class="headerlink" title="中文的支持"></a>中文的支持</h3><ul>
+<li><p>如果你想采用MySQL作为Superset的元数据，请务必修改所MySQL表结构里的charcter，默认是latin1，连中文的Dashboard名字都不支持</p>
+<ul>
+<li>多说一句，直接alter table modify是不可以的，需要把数据dump出来，sed修改一下，再灌入『资深DBA友情提醒』</li>
+</ul>
+</li>
+<li><p>ClickHouse方面</p>
+<ul>
+<li>Superset使用的是cloudflare/sqlalchemy-clickhouse驱动，默认是支持中文的，但是在Python2的Superset版本上，会出现中文无法正常解析的问题，所以，如果使用ClickHouse，请使用基于Python3版本的Superset</li>
+</ul>
+</li>
+</ul>
+<h3 id="超时问题"><a href="#超时问题" class="headerlink" title="超时问题"></a>超时问题</h3><ul>
+<li>部分数据分析的SQL，需要很久才能返回，默认的Superset是30秒超时，需要酌情修改</li>
+<li><p>在配置文件里修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">SUPERSET_WEBSERVER_TIMEOUT = 300</div><div class="line">CACHE_DEFAULT_TIMEOUT = 60 * 60 * 24</div><div class="line">SQLLAB_TIMEOUT = 300</div></pre></td></tr></table></figure>
+</li>
+<li><p>我们遇到最慢的可能就是几百秒，如果再慢，就建议把数据做二次提取了</p>
+</li>
+</ul>
+<h3 id="默认的limit-5000条"><a href="#默认的limit-5000条" class="headerlink" title="默认的limit 5000条"></a>默认的limit 5000条</h3><ul>
+<li><p>在配置文件里修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">config.py:ROW_LIMIT = 1000000</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="时区问题"><a href="#时区问题" class="headerlink" title="时区问题"></a>时区问题</h3><ul>
+<li>使用Docker启动的Superset，请务必修改Docker时区</li>
+</ul>
+<h3 id="部分画图Bug"><a href="#部分画图Bug" class="headerlink" title="部分画图Bug"></a>部分画图Bug</h3><ul>
+<li>老版本，地图着色异常，升级新版后解决</li>
+<li>0.23.2在时间序列堆叠图中，存在Y轴移除的Bug，如图：<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15207433283142.jpg" alt=""></li>
+<li>通过如下方式可以临时解决：<br> <img src="http://7xs54v.com1.z0.glb.clouddn.com/15207433215659.jpg" alt=""></li>
+</ul>
+<h3 id="地图渲染"><a href="#地图渲染" class="headerlink" title="地图渲染"></a>地图渲染</h3><ul>
+<li>Superset的地图渲染使用『ISO 3166-1』进行映射，相关文档见：<a href="https://superset.incubator.apache.org/visualization.html" target="_blank" rel="external">Country Map Tools</a></li>
+</ul>
+<h2 id="什么时候用Grafana，什么时候用Superset"><a href="#什么时候用Grafana，什么时候用Superset" class="headerlink" title="什么时候用Grafana，什么时候用Superset"></a>什么时候用Grafana，什么时候用Superset</h2><ul>
+<li>时间序列，选Grafana</li>
+<li>数据量很大，用Grafana</li>
+<li>静态的日报、报表，Superset表现力很好</li>
+</ul>
+<h2 id="我们的创新"><a href="#我们的创新" class="headerlink" title="我们的创新"></a>我们的创新</h2><ul>
+<li>有如下一个场景，我们很难以解决：<ul>
+<li>有些数据报表，需要每天使用邮件的方式发送各个产品负责人以及相关老板</li>
+<li>有人问，为啥必须发邮件，而不能走系统。</li>
+<li>答：你让老板天天登陆系统来看么？未来也许可以，目前的阶段不现实。</li>
+<li>邮件可以非常直观的方式，是一种非常友好的通信方式，所以邮件我们必须支持。</li>
+<li>那么就引发1个问题：<ul>
+<li>邮件是不支持炫酷的HTML页面的（复杂的CSS样式支持），所以，想要偷懒嵌入一个页面发过去，不可以~</li>
+<li>业务繁多，有的希望有饼图，有的希望有时间序列图，有的希望有时间序列堆叠图，这些各式各样的需求很难高效满足</li>
+</ul>
+</li>
+<li>于是乎，我们相出了如下方案：<ul>
+<li>暂时不开发专门的数据图表系统（其实是有一个的，但是有一些缺陷，而且用户很少主动来门户系统查看数据，都依赖邮件）</li>
+<li>邮件发送一个HTML页面嵌入的截图</li>
+<li>关键在这个截图的生成上，答案就是，数据分析师使用Superset对各种业务配置Dashboard，后台使用Python定期截图，嵌入到HTML页面，这样，就可以发送一封样式美观大方的数据汇总邮件了</li>
+<li>遇到几个问题：<ul>
+<li>发送时要强制刷新，可能会遇到查询超时问题，上面已经说了，如何解决</li>
+<li>截图可能会失败：增加重试机制，目前稳定性可以达到4个9</li>
+<li>Windows的邮件客户端，对长图支持有限制，会导致图片变形<ul>
+<li>好在大多数老板都Mac系统，忽略</li>
+<li>你配置Dashboard别搞那么长不就行了~</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h2><ul>
+<li>权限管理<ul>
+<li>对于数据这种敏感的东西，实际使用过程中，肯定是各自看各自的数据，你并不希望别人看到你的数据</li>
+<li>目前的权限设置比较混乱，官方提供了一个复杂的权限控制，但是并不好用</li>
+</ul>
+</li>
+<li>想快速复制一个图表？难，从SQL层面再走一遍吧</li>
+</ul>
+<h2 id="其他选项"><a href="#其他选项" class="headerlink" title="其他选项"></a>其他选项</h2><ul>
+<li><p>metabase </p>
+<ul>
+<li><a href="https://github.com/metabase/metabase" target="_blank" rel="external">https://github.com/metabase/metabase </a></li>
+<li>目前不支持ClickHouse<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15206089541379.png" alt=""></li>
+</ul>
+</li>
+<li><p>Redash</p>
+<ul>
+<li><a href="https://github.com/getredash/redash" target="_blank" rel="external">https://github.com/getredash/redash</a></li>
+<li>支持ClickHouse</li>
+<li>美观程度相比Superset不够精美</li>
+<li>支持简单的报警规则</li>
+<li>可以把Dashboard分享出去</li>
+<li>支持的图表类型有限<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15276947139850.jpg" alt=""></li>
+</ul>
+</li>
+<li><p>Zeppelin</p>
+<ul>
+<li><a href="https://github.com/apache/zeppelin" target="_blank" rel="external">https://github.com/apache/zeppelin</a></li>
+<li>来自Apache项目</li>
+<li>支持ClickHouse</li>
+<li>炫酷程度2颗星</li>
+<li>Zeppelin更像是一个notebook，而不是一个单纯的BI工具<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15276949314053.png" alt=""></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>SQLPad</p>
+<ul>
+<li><a href="https://github.com/rickbergfalk/sqlpad" target="_blank" rel="external">https://github.com/rickbergfalk/sqlpad</a><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15276947004641.jpg" alt=""></li>
+</ul>
+</li>
+<li><p>Franchise</p>
+<ul>
+<li><a href="https://github.com/HVF/franchise" target="_blank" rel="external">https://github.com/HVF/franchise</a><br><img src="http://7xs54v.com1.z0.glb.clouddn.com/68747470733a2f2f6672616e63686973652e636c6f75642f696d616765732f6c616e64696e672d6769662e676966.gif" alt="68747470733a2f2f6672616e63686973652e636c6f75642f696d616765732f6c616e64696e672d6769662e676966"></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>CBoard<ul>
+<li><a href="https://github.com/yzhang921/CBoard" target="_blank" rel="external">https://github.com/yzhang921/CBoard</a></li>
+<li>国人开发的一款可视化工具</li>
+<li>交互设计的不错，但是实际用起来感觉很奇怪</li>
+<li>Java系<br><img src="http://7xs54v.com1.z0.glb.clouddn.com/15276946776870.gif" alt=""></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Davinci<ul>
+<li>宜信开发的达芬奇，也是Java系</li>
+<li>功能还是比较全面的，只是在国内还没有大范围的使用</li>
+<li><a href="https://github.com/edp963/davinci" target="_blank" rel="external">https://github.com/edp963/davinci</a><br> <img src="http://7xs54v.com1.z0.glb.clouddn.com/15276945921636.jpg" alt=""></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>商业：</p>
+<ul>
+<li>FineBI<ul>
+<li>国内做的一流的BI工具，我们也接触过，很炫酷，也比较实用，目前不支持ClickHouse</li>
+</ul>
+</li>
+<li>Tableau<ul>
+<li>多少商业课程都是在教这个，不过互联网讲究的是免费，怎么会用『😂』</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>其他可视化资源：</p>
+<ul>
+<li><a href="https://github.com/thenaturalist/awesome-business-intelligence" target="_blank" rel="external">https://github.com/thenaturalist/awesome-business-intelligence</a></li>
+<li><a href="https://github.com/topics/business-intelligence?o=desc&amp;s=stars" target="_blank" rel="external">https://github.com/topics/business-intelligence?o=desc&amp;s=stars</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><ul>
+<li>目前superset迭代进度很快，建议定期跟进更新</li>
+<li>部分版本存在无法平滑更新的问题，比如最新的0.25.2版本，元数据增加了很多表，部分表的字段也做了调整，很难100%平滑升级</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/22/ClickHouse-Data-Replication/" rel="next" title="34页PPT掌握ClickHouse的数据复制">
+                <i class="fa fa-chevron-left"></i> 34页PPT掌握ClickHouse的数据复制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2018/05/30/Superset-Introduce/"
+           data-title="可能是目前颜值最高的开源BI工具-Superset" data-url="http://jackpgao.github.io/2018/05/30/Superset-Introduce/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Jack Gao" />
+          <p class="site-author-name" itemprop="name">Jack Gao</p>
+           
+              <p class="site-description motion-element" itemprop="description">Done is better than perfect!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/jackpgao/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#目前支持的图表类型"><span class="nav-number">1.0.1.</span> <span class="nav-text">目前支持的图表类型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何搭建"><span class="nav-number">2.</span> <span class="nav-text">如何搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题与坑"><span class="nav-number">3.</span> <span class="nav-text">问题与坑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#中文的支持"><span class="nav-number">3.1.</span> <span class="nav-text">中文的支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#超时问题"><span class="nav-number">3.2.</span> <span class="nav-text">超时问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#默认的limit-5000条"><span class="nav-number">3.3.</span> <span class="nav-text">默认的limit 5000条</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时区问题"><span class="nav-number">3.4.</span> <span class="nav-text">时区问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部分画图Bug"><span class="nav-number">3.5.</span> <span class="nav-text">部分画图Bug</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#地图渲染"><span class="nav-number">3.6.</span> <span class="nav-text">地图渲染</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么时候用Grafana，什么时候用Superset"><span class="nav-number">4.</span> <span class="nav-text">什么时候用Grafana，什么时候用Superset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我们的创新"><span class="nav-number">5.</span> <span class="nav-text">我们的创新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不足之处"><span class="nav-number">6.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他选项"><span class="nav-number">7.</span> <span class="nav-text">其他选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后"><span class="nav-number">8.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Gao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"JackpGao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+</body>
+</html>
