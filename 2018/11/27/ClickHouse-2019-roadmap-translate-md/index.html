@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="ClickHouse,数据分析,大数据," />
+  <meta name="keywords" content="ClickHouse,Roadmap," />
 
 
 
@@ -87,54 +87,34 @@
 
 
 
-<meta name="description" content="当所有人都在谈论，如何用Hadoop、Spark这些巨无霸组件来分析大数据的时候，远在西伯利亚的战斗民族，开发了一个极具吸引力的数据仓库：ClickHouse
-如同上面的动图，ClickHouse是一个：
-列式存储数据库
-关系型
-巨快无比
-分布式
-高可用
-PB级别
+<meta name="description" content="内容来自 https://github.com/yandex/clickhouse-presentations/tree/master/roadmap2018 
+直接Google翻译的俄文，没做修改，仅用于看明大意
+综合来看，CK将在资源管理、资源使用、ML方面有更好的提升，非常期待
 
-
-
-
-后续的文章，会逐步介绍ClickHouse这个好用的工具，真正能让好的工具服务我们的工作">
+2018年12月生产中的LowCardinality数据类型。
+在各列级别上选择压缩算法。
+导入JSONEac">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数据分析的黑马-ClickHouse介绍">
-<meta property="og:url" content="http://jackpgao.github.io/2017/11/13/ClickHouse-Introduce/index.html">
+<meta property="og:title" content="Jack Gao's Blog">
+<meta property="og:url" content="http://jackpgao.github.io/2018/11/27/ClickHouse-2019-roadmap-translate-md/index.html">
 <meta property="og:site_name" content="Jack Gao's Blog">
-<meta property="og:description" content="当所有人都在谈论，如何用Hadoop、Spark这些巨无霸组件来分析大数据的时候，远在西伯利亚的战斗民族，开发了一个极具吸引力的数据仓库：ClickHouse
-如同上面的动图，ClickHouse是一个：
-列式存储数据库
-关系型
-巨快无比
-分布式
-高可用
-PB级别
+<meta property="og:description" content="内容来自 https://github.com/yandex/clickhouse-presentations/tree/master/roadmap2018 
+直接Google翻译的俄文，没做修改，仅用于看明大意
+综合来看，CK将在资源管理、资源使用、ML方面有更好的提升，非常期待
 
-
-
-
-后续的文章，会逐步介绍ClickHouse这个好用的工具，真正能让好的工具服务我们的工作">
-<meta property="og:image" content="http://7xs54v.com1.z0.glb.clouddn.com/clickhouse.gif">
-<meta property="og:updated_time" content="2017-11-13T08:45:53.000Z">
+2018年12月生产中的LowCardinality数据类型。
+在各列级别上选择压缩算法。
+导入JSONEac">
+<meta property="og:updated_time" content="2018-11-27T02:04:41.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数据分析的黑马-ClickHouse介绍">
-<meta name="twitter:description" content="当所有人都在谈论，如何用Hadoop、Spark这些巨无霸组件来分析大数据的时候，远在西伯利亚的战斗民族，开发了一个极具吸引力的数据仓库：ClickHouse
-如同上面的动图，ClickHouse是一个：
-列式存储数据库
-关系型
-巨快无比
-分布式
-高可用
-PB级别
+<meta name="twitter:title" content="Jack Gao's Blog">
+<meta name="twitter:description" content="内容来自 https://github.com/yandex/clickhouse-presentations/tree/master/roadmap2018 
+直接Google翻译的俄文，没做修改，仅用于看明大意
+综合来看，CK将在资源管理、资源使用、ML方面有更好的提升，非常期待
 
-
-
-
-后续的文章，会逐步介绍ClickHouse这个好用的工具，真正能让好的工具服务我们的工作">
-<meta name="twitter:image" content="http://7xs54v.com1.z0.glb.clouddn.com/clickhouse.gif">
+2018年12月生产中的LowCardinality数据类型。
+在各列级别上选择压缩算法。
+导入JSONEac">
 
 
 
@@ -162,13 +142,13 @@ PB级别
 
 
 
-  <link rel="canonical" href="http://jackpgao.github.io/2017/11/13/ClickHouse-Introduce/"/>
+  <link rel="canonical" href="http://jackpgao.github.io/2018/11/27/ClickHouse-2019-roadmap-translate-md/"/>
 
 
 
 
 
-  <title> 数据分析的黑马-ClickHouse介绍 | Jack Gao's Blog </title>
+  <title>  | Jack Gao's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -345,7 +325,7 @@ PB级别
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2017/11/13/ClickHouse-Introduce/">
+    <link itemprop="mainEntityOfPage" href="http://jackpgao.github.io/2018/11/27/ClickHouse-2019-roadmap-translate-md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jack Gao">
@@ -366,7 +346,7 @@ PB级别
             
             
               
-                数据分析的黑马-ClickHouse介绍
+                
               
             
           </h1>
@@ -381,8 +361,8 @@ PB级别
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-13T16:42:21+08:00">
-                2017-11-13
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-27T10:03:29+08:00">
+                2018-11-27
               </time>
             
 
@@ -422,8 +402,8 @@ PB级别
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/11/13/ClickHouse-Introduce/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/13/ClickHouse-Introduce/" itemprop="commentCount"></span>
+                <a href="/2018/11/27/ClickHouse-2019-roadmap-translate-md/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/11/27/ClickHouse-2019-roadmap-translate-md/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -449,22 +429,42 @@ PB级别
       
 
       
-        <p><img src="http://7xs54v.com1.z0.glb.clouddn.com/clickhouse.gif" alt="clickhouse"></p>
-<ul>
-<li>当所有人都在谈论，如何用Hadoop、Spark这些巨无霸组件来分析大数据的时候，远在西伯利亚的战斗民族，开发了一个极具吸引力的数据仓库：ClickHouse</li>
-<li>如同上面的动图，ClickHouse是一个：<ol>
-<li>列式存储数据库</li>
-<li>关系型</li>
-<li>巨快无比</li>
-<li>分布式</li>
-<li>高可用</li>
-<li>PB级别</li>
-</ol>
-</li>
-</ul>
-<ul>
-<li>后续的文章，会逐步介绍ClickHouse这个好用的工具，真正能让好的工具服务我们的工作</li>
-</ul>
+        <blockquote>
+<p>内容来自 <a href="https://github.com/yandex/clickhouse-presentations/tree/master/roadmap2018" target="_blank" rel="external">https://github.com/yandex/clickhouse-presentations/tree/master/roadmap2018</a> </p>
+<p>直接Google翻译的俄文，没做修改，仅用于看明大意</p>
+<p>综合来看，CK将在资源管理、资源使用、ML方面有更好的提升，非常期待</p>
+</blockquote>
+<h2 id="2018年12月"><a href="#2018年12月" class="headerlink" title="2018年12月"></a>2018年12月</h2><p>生产中的<strong>LowCardinality</strong>数据类型。</p>
+<p>在各列级别上选择压缩算法。</p>
+<p>导入JSONEachRow时支持可计算的DEFAULT表达式。</p>
+<p><strong>镶木地板</strong>格式支持导入和导出。</p>
+<h2 id="2019年1月"><a href="#2019年1月" class="headerlink" title="2019年1月"></a>2019年1月</h2><p>使用表函数将数据导入/导出到<strong>HDFS</strong>。</p>
+<p>使用表函数在<strong>S3中</strong>导入/导出数据。</p>
+<p>能够将新列添加<br>到MergeTree表的排序键。</p>
+<p>减少ZooKeeper中的元数据量。</p>
+<h2 id="2019年2月"><a href="#2019年2月" class="headerlink" title="2019年2月"></a>2019年2月</h2><p>通过DDL查询创建字典的能力。</p>
+<p>MergeTree表中索引的自适应粒度。</p>
+<h2 id="访问权限管理"><a href="#访问权限管理" class="headerlink" title="访问权限管理"></a>访问权限管理</h2><p>表，列和行级别的访问限制<br>（行级安全性）。</p>
+<p>访问控制角色模型（RBAC）。</p>
+<p>能够连接外部<br>身份验证系统（LDAP，Kerberos）。</p>
+<a id="more"></a>
+<h2 id="资源共享请求"><a href="#资源共享请求" class="headerlink" title="资源共享请求"></a>资源共享请求</h2><p>可配置的资源池：CPU，IO，网络，RAM的份额。</p>
+<h2 id="开发支持JOIN"><a href="#开发支持JOIN" class="headerlink" title="开发支持JOIN"></a>开发支持JOIN</h2><p>多个JOIN而不使用嵌套子查询。</p>
+<p>合并JOIN以连接非常大的集合。</p>
+<p>Bucket-Shuffle JOIN用于优化大型分布式JOIN。</p>
+<h2 id="（2019年春-夏）"><a href="#（2019年春-夏）" class="headerlink" title="（2019年春/夏）"></a>（2019年春/夏）</h2><h2 id="二级索引"><a href="#二级索引" class="headerlink" title="二级索引"></a>二级索引</h2><p>确切地说，是用于跳过数据的索引结构。</p>
+<p>最小/最大，不同值，微布隆过滤器。</p>
+<h2 id="机器学习方法"><a href="#机器学习方法" class="headerlink" title="机器学习方法"></a>机器学习方法</h2><p>作为聚合函数</p>
+<p>能够<br>直接在ClickHouse中创建和应用模型。</p>
+<h2 id="关键列的ORDER-BY和GROUP-BY优化。"><a href="#关键列的ORDER-BY和GROUP-BY优化。" class="headerlink" title="关键列的ORDER BY和GROUP BY优化。"></a>关键列的ORDER BY和GROUP BY优化。</h2><p><code>SELECT * FROM sensors ORDER BY time DESC LIMIT 10</code></p>
+<h2 id="扩大使用地理数据的机会"><a href="#扩大使用地理数据的机会" class="headerlink" title="扩大使用地理数据的机会"></a>扩大使用地理数据的机会</h2><p>使用geohash的函数。</p>
+<p>用于搜索的多边形词典（按位置的区域请求）。</p>
+<h2 id="高级字符串算法"><a href="#高级字符串算法" class="headerlink" title="高级字符串算法"></a>高级字符串算法</h2><p>半共享模糊搜索的最小哈希算法。</p>
+<p>快速匹配大量子串。</p>
+<p>能够创建其他结构以加速对字符串中的子串的强力搜索。</p>
+<h2 id="将数据存储在多个部分中"><a href="#将数据存储在多个部分中" class="headerlink" title="将数据存储在多个部分中"></a>将数据存储在多个部分中</h2><p>在SSD和HDD上分离热数据和冷数据。</p>
+<p>能够使用JBOD。</p>
+<h2 id="适当缓冲MergeTree"><a href="#适当缓冲MergeTree" class="headerlink" title="适当缓冲MergeTree"></a>适当缓冲MergeTree</h2><p>摆脱频繁插入的问题。</p>
 
       
     </div>
@@ -490,9 +490,7 @@ PB级别
           
             <a href="/tags/ClickHouse/" rel="tag"># ClickHouse</a>
           
-            <a href="/tags/数据分析/" rel="tag"># 数据分析</a>
-          
-            <a href="/tags/大数据/" rel="tag"># 大数据</a>
+            <a href="/tags/Roadmap/" rel="tag"># Roadmap</a>
           
         </div>
       
@@ -505,8 +503,8 @@ PB级别
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/25/IT-guy-video/" rel="next" title="给IT人看的科普视频">
-                <i class="fa fa-chevron-left"></i> 给IT人看的科普视频
+              <a href="/2018/10/08/Notice/" rel="next" title="Notice">
+                <i class="fa fa-chevron-left"></i> Notice
               </a>
             
           </div>
@@ -514,10 +512,6 @@ PB级别
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/11/19/MacOS-Free-NTFS-Drive/" rel="prev" title="Mac OS上免费的NTFS驱动">
-                Mac OS上免费的NTFS驱动 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -539,15 +533,12 @@ PB级别
           </div>
           
 
-  <p>热评文章</p>
-  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
-
 
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/11/13/ClickHouse-Introduce/"
-           data-title="数据分析的黑马-ClickHouse介绍" data-url="http://jackpgao.github.io/2017/11/13/ClickHouse-Introduce/">
+      <div class="ds-thread" data-thread-key="2018/11/27/ClickHouse-2019-roadmap-translate-md/"
+           data-title="" data-url="http://jackpgao.github.io/2018/11/27/ClickHouse-2019-roadmap-translate-md/">
       </div>
     
   </div>
@@ -571,8 +562,17 @@ PB级别
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpg"
@@ -641,6 +641,22 @@ PB级别
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2018年12月"><span class="nav-number">1.</span> <span class="nav-text">2018年12月</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2019年1月"><span class="nav-number">2.</span> <span class="nav-text">2019年1月</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2019年2月"><span class="nav-number">3.</span> <span class="nav-text">2019年2月</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问权限管理"><span class="nav-number">4.</span> <span class="nav-text">访问权限管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源共享请求"><span class="nav-number">5.</span> <span class="nav-text">资源共享请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发支持JOIN"><span class="nav-number">6.</span> <span class="nav-text">开发支持JOIN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#（2019年春-夏）"><span class="nav-number">7.</span> <span class="nav-text">（2019年春/夏）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二级索引"><span class="nav-number">8.</span> <span class="nav-text">二级索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#机器学习方法"><span class="nav-number">9.</span> <span class="nav-text">机器学习方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键列的ORDER-BY和GROUP-BY优化。"><span class="nav-number">10.</span> <span class="nav-text">关键列的ORDER BY和GROUP BY优化。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩大使用地理数据的机会"><span class="nav-number">11.</span> <span class="nav-text">扩大使用地理数据的机会</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级字符串算法"><span class="nav-number">12.</span> <span class="nav-text">高级字符串算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将数据存储在多个部分中"><span class="nav-number">13.</span> <span class="nav-text">将数据存储在多个部分中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#适当缓冲MergeTree"><span class="nav-number">14.</span> <span class="nav-text">适当缓冲MergeTree</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
